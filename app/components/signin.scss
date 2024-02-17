@@ -1,0 +1,103 @@
+.bg {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background-color: #313237;
+  background-image: url("../img/login-bg.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: repeat-y;
+  /* filter: blur(10px); /* 调整模糊程度，可以根据需要修改值 */
+}
+
+.main .contain {
+  position: fixed;
+  left: 50%;
+  top: 40%;
+  width: 90%;
+  max-width: 400px;
+  transform: translate(-50%, -50%);
+  padding: 20px 10px;
+  color: #ffffff;
+  border-radius: 10px;
+}
+
+.main .contain .logo {
+  text-align: center;
+}
+
+.main .contain .logo .el-image {
+  width: 120px;
+}
+
+.main .contain .header {
+  width: 100%;
+  margin-bottom: 24px;
+  font-size: 24px;
+  color: #ffffff;
+  letter-spacing: 2px;
+  text-align: center;
+}
+
+.main .contain .content {
+  width: 100%;
+  height: auto;
+  border-radius: 3px;
+}
+
+.main .contain .content .block {
+  margin-bottom: 16px;
+}
+
+.main .contain .content .block .el-input__inner {
+  border: 1px solid #808080 !important;
+}
+
+.main .contain .content .block .el-input__inner .el-icon-user,
+.main .contain .content .block .el-input__inner .el-icon-lock {
+  font-size: 20px;
+}
+
+.main .contain .content .btn-row {
+  padding-top: 10px;
+}
+
+.main .contain .content .btn-row .login-btn {
+  width: 100%;
+  font-size: 16px;
+  letter-spacing: 2px;
+}
+
+.main .contain .content .text-line {
+  justify-content: center;
+  padding-top: 10px;
+  font-size: 14px;
+}
+
+.main .footer {
+  color: #ffffff;
+}
+.footer {
+  color: #ffffff;
+}
+.main .footer .container {
+  padding: 20px;
+  color: #ffffff;
+}
+.container {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+.container .footer {
+  max-width: 400px;
+  text-align: center;
+  font-size: 14px;
+  padding: 20px;
+  width: 100%;
+}

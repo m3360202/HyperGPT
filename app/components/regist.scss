@@ -1,0 +1,119 @@
+.bg {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background-color: #091519;
+    background-image: url("../img/login-bg.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    /*filter: blur(10px); /* 调整模糊程度，可以根据需要修改值 */
+}
+
+.register-page {
+    display: flex;
+    justify-content: center;
+}
+
+.register-page .page-inner {
+    max-width: 450px;
+    min-width: 360px;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.register-page .page-inner .contain {
+    padding: 0 40px 20px 40px;
+    width: 100%;
+    color: #ffffff;
+    border-radius: 10px;
+    z-index: 10;
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+.register-page .page-inner .contain .logo {
+    text-align: center;
+}
+
+.register-page .page-inner .contain .logo .el-image {
+    width: 120px;
+}
+
+.register-page .page-inner .contain .header {
+    width: 100%;
+    margin-bottom: 24px;
+    margin-top: 24px;
+    font-size: 24px;
+    color: #fff;
+    letter-spacing: 2px;
+    text-align: center;
+}
+
+.register-page .page-inner .contain .content {
+    width: 100%;
+    height: auto;
+    border-radius: 3px;
+}
+
+.register-page .page-inner .contain .content .block {
+    margin-bottom: 16px;
+}
+
+.register-page .page-inner .contain .content .block .el-input__inner {
+    border: 1px solid #808080 !important;
+}
+
+.register-page .page-inner .contain .content .block .el-input__inner .el-icon-user,
+.register-page .page-inner .contain .content .block .el-input__inner .el-icon-lock {
+    font-size: 20px;
+}
+
+.register-page .page-inner .contain .content .btn-row {
+    padding-top: 10px;
+}
+
+.register-page .page-inner .contain .content .btn-row .login-btn {
+    width: 100%;
+    font-size: 16px;
+    letter-spacing: 2px;
+}
+
+.register-page .page-inner .contain .content .text-line {
+    justify-content: center;
+    padding-top: 10px;
+    font-size: 14px;
+}
+
+.register-page .page-inner .tip-result {
+    z-index: 10;
+}
+
+.register-page .page-inner .tip-result .wechat-card {
+    padding: 20px;
+}
+
+.register-page .page-inner .footer {
+    color: #ffffff;
+}
+
+.register-page .page-inner .footer .container {
+    padding: 20px;
+}
+
+.el-result.register-page {
+    border-radius: 10px;
+    background-color: rgba(14, 25, 30, 0.6);
+    border: 1px solid #666;
+}
+
+.el-result.register-page .el-result__title p {
+    color: #ffffff;
+}
+
+.el-result.register-page .el-result__subtitle p {
+    color: #c1c1c1;
+}
