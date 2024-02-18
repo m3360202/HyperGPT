@@ -13,6 +13,7 @@ export function validateMobile(mobile) {
 
 export function RegisterPage() {
   const [username, setUsername] = useState("");
+  const [realname, setRealname] = useState("");
   const [password, setPassword] = useState("");
   const [repass, setRepass] = useState("");
   const navigate = useNavigate();
@@ -22,6 +23,12 @@ export function RegisterPage() {
       return Dialog.alert({
         title: "注册错误",
         message: "请输入合法的手机号",
+      });
+    }
+    if (!realname) {
+      return Dialog.alert({
+        title: "注册错误",
+        message: "请填写您的真实姓名",
       });
     }
     if (password.length < 8) {
@@ -36,7 +43,7 @@ export function RegisterPage() {
         message: "两次密码输入不一致",
       });
     }
-    let formData = { username, password, repass };
+    let formData = { username, password, repass,realname };
 
     axios
       .post("https://ai.aliensoft.com.cn/api/register", formData)
@@ -48,6 +55,7 @@ export function RegisterPage() {
             id: res.data.data.id,
             avatar: res.data.data.avatar,
             userName: res.data.data.username,
+            realname: res.data.data.realname,
             token: res.data.data.token,
           });
           navigate(Path.Home);
@@ -86,7 +94,20 @@ export function RegisterPage() {
                 ></Input>
               </Cell>
             </div>
-
+            <div className="block">
+              <Cell>
+                <Input
+                  placeholder="姓名"
+                  size="large"
+                  maxlength="11"
+                  autocomplete="off"
+                  value={realname}
+                  onChange={(e) => {
+                    setRealname(e);
+                  }}
+                ></Input>
+              </Cell>
+            </div>
             <div className="block">
               <Cell>
                 <Input
