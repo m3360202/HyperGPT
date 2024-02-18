@@ -146,10 +146,9 @@ export class ChatGLMApi implements LLMApi {
     const shouldStream = !!options.config.stream;
     const controller = new AbortController();
     options.onController?.(controller);
-    const serverConfig = getServerSideConfig();
     try {
       const chatPath = this.path(ChatGLM.ChatPath);
-      console.log("body", requestPayload, serverConfig, process.env);
+      
       const chatPayload = {
         method: "POST",
         body: JSON.stringify(requestPayload),
@@ -157,7 +156,7 @@ export class ChatGLMApi implements LLMApi {
         headers: {
           Accept: "application/json",
           Authorization: await generateToken(
-            getServerSideConfig().glmAppKey ?? "",
+            process.env.NEXT_PUBLIC_GLM_APP_KEY ?? "",
             3600,
           ),
           "Content-Type": "application/json",

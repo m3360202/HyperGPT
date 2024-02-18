@@ -113,11 +113,11 @@ export const getServerSideConfig = () => {
     disableFastLink: !!process.env.DISABLE_FAST_LINK,
     customModels,
 
-    glmAppKey: process.env.GLM_APP_KEY,
+    glmAppKey: process.env.NEXT_PUBLIC_GLM_APP_KEY,
 
-    ossAppId: process.env.OSS_APP_ID,
-    ossAppSecret: process.env.OSS_APP_SECRET,
-    ossAppRegion: process.env.OSS_APP_REGION,
-    ossAppBucket: process.env.OSS_APP_BUCKET,
+    ossAppId: process.env.NEXT_PUBLIC_OSS_APP_ID,
+    ossAppSecret: process.env.NEXT_PUBLIC_OSS_APP_SECRET,
+    ossAppRegion: process.env.NEXT_PUBLIC_OSS_APP_REGION,
+    ossAppBucket: process.env.NEXT_PUBLIC_OSS_APP_BUCKET,
   };
 };

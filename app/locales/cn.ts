@@ -63,7 +63,6 @@ const cn = {
       Masks: "所有角色",
       Clear: "清除聊天",
       Settings: "对话设置",
-      Upload: "上传图片",
     },
     Rename: "重命名对话",
     Typing: "正在输入…",

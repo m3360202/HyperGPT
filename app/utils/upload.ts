@@ -6,10 +6,10 @@ export async function uploadFile(file: any) {
 
   // 阿里云OSS配置
   const client = new OSS({
-    region: process.env.OSS_APP_REGION ?? "", // 你的OSS区域
-    accessKeyId: process.env.OSS_APP_ID ?? "", // 替换为你的AccessKeyId
-    accessKeySecret: process.env.OSS_APP_SECRET ?? "", // 替换为你的AccessKeySecret
-    bucket: process.env.OSS_APP_BUCKET ?? "", // 你的Bucket名称
+    region: process.env.NEXT_PUBLIC_OSS_APP_REGION ?? "", // 你的OSS区域
+    accessKeyId: process.env.NEXT_PUBLIC_OSS_APP_ID ?? "", // 替换为你的AccessKeyId
+    accessKeySecret: process.env.NEXT_PUBLIC_OSS_APP_SECRET ?? "", // 替换为你的AccessKeySecret
+    bucket: process.env.NEXT_PUBLIC_OSS_APP_BUCKET ?? "", // 你的Bucket名称
   });
 
   // 确保文件名没有斜杠开头
