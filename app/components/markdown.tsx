@@ -166,6 +166,7 @@ export function Markdown(
     fontSize?: number;
     parentRef?: RefObject<HTMLDivElement>;
     defaultShow?: boolean;
+    img?:string;
   } & React.DOMAttributes<HTMLDivElement>,
 ) {
   const mdRef = useRef<HTMLDivElement>(null);
@@ -185,15 +186,16 @@ export function Markdown(
         <LoadingIcon />
       ) : (
         <>
-          {props.content.indexOf(
-            "https://hypergpt.oss-ap-southeast-1.aliyuncs.com/",
-          ) === 0 ? (
+          {(props.img && props.img.length > 0) ? (
+            <>
+            <MarkdownContent content={props.content} />
             <div style={{ maxWidth: "240px", height: "auto" }}>
               <img
-                src={props.content}
-                style={{ width: "100%", height: "auto" }}
+                src={props.img}
+                style={{ width: "100%", height: "auto",borderRadius:"8px" }}
               />
             </div>
+            </>
           ) : (
             <MarkdownContent content={props.content} />
           )}

@@ -1295,6 +1295,7 @@ function _Chat() {
                       fontSize={fontSize}
                       parentRef={scrollRef}
                       defaultShow={i >= messages.length - 6}
+                      img={message.img}
                     />
                   </div>
 
