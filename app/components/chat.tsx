@@ -6,6 +6,7 @@ import React, {
   useMemo,
   useCallback,
   Fragment,
+  use,
 } from "react";
 
 import SendWhiteIcon from "../icons/send-white.svg";
@@ -34,7 +35,7 @@ import AutoIcon from "../icons/auto.svg";
 import BottomIcon from "../icons/bottom.svg";
 import StopIcon from "../icons/pause.svg";
 import RobotIcon from "../icons/robot.svg";
-
+import { Uploader } from 'react-vant';
 import {
   ChatMessage,
   SubmitKey,
@@ -417,7 +418,8 @@ export function ChatActions(props: {
   const navigate = useNavigate();
   const chatStore = useChatStore();
   const modelConfig = useChatStore.getState().currentSession().mask.modelConfig;
-
+  const shouldCleanImg = useCurrentFile.getState().shouldCleanImg;
+  const imgMaxCount = 1;
   // switch themes
   const theme = config.theme;
   function nextTheme() {
@@ -440,6 +442,14 @@ export function ChatActions(props: {
     [allModels],
   );
   const [showModelSelector, setShowModelSelector] = useState(false);
+  const [tasks, setTasks] = React.useState([])
+  const handleSetImg = (file: any) => {
+
+    if (file && file[0] && file[0].file) {
+      useCurrentFile.setState({ file: file[0].file });
+    }
+
+  }
 
   useEffect(() => {
     // if current model is not available
@@ -453,6 +463,13 @@ export function ChatActions(props: {
       showToast(nextModel);
     }
   }, [chatStore, currentModel, models]);
+
+  useEffect(() => {
+    if (shouldCleanImg) {
+      setTasks([]);
+      useCurrentFile.setState({ file: null, url: "", shouldCleanImg: false });
+    }
+  }, [shouldCleanImg]);
 
   return (
     <div className={styles["chat-input-actions"]}>
@@ -470,34 +487,7 @@ export function ChatActions(props: {
           icon={<BottomIcon />}
         />
       )}
-      {modelConfig.model === "glm-4v" && (
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            marginTop: "-10px",
-            marginRight: "6px",
-          }}
-        >
-          <input id="myfile" type="file" />
-          <button
-            onClick={() => {
-              const inputElement = document.getElementById(
-                "myfile",
-              ) as HTMLInputElement;
 
-              if (inputElement.files && inputElement.files.length > 0) {
-                const file = inputElement.files[0];
-
-                uploadFile(file);
-              }
-            }}
-          >
-            上传
-          </button>
-        </div>
-      )}
       {props.hitBottom && (
         <ChatAction
           onClick={props.showPromptModal}
@@ -574,6 +564,23 @@ export function ChatActions(props: {
             showToast(s[0]);
           }}
         />
+      )}
+      {modelConfig.model === "glm-4v" && (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            marginTop: "-10px",
+            marginRight: "6px",
+          }}
+        >
+          <Uploader value={tasks} accept='*' maxCount={imgMaxCount} onChange={(v: any) => {
+            setTasks(v);
+            handleSetImg(v);
+          }} />
+
+        </div>
       )}
     </div>
   );
@@ -659,7 +666,7 @@ function _Chat() {
   const [hitBottom, setHitBottom] = useState(true);
   const isMobileScreen = useMobileScreen();
   const navigate = useNavigate();
-  const { url } = useCurrentFile();
+
   // prompt hints
   const promptStore = usePromptStore();
   const [promptHints, setPromptHints] = useState<RenderPompt[]>([]);
@@ -726,9 +733,16 @@ function _Chat() {
     }
   };
 
-  const doSubmit = (userInput: string) => {
+  const doSubmit = async (userInput: string) => {
     if (userInput.trim() === "") return;
     const matchCommand = chatCommands.match(userInput);
+    const currentFile = useCurrentFile.getState().file ?? { name: '' };
+
+    if (currentFile.name.length > 0) {
+      await uploadFile(currentFile);
+    }
+    const img = useCurrentFile.getState().url;
+
     if (matchCommand.matched) {
       setUserInput("");
       setPromptHints([]);
@@ -737,15 +751,9 @@ function _Chat() {
       return;
     }
 
-    chatStore.onUserInput(userInput).then(() => {
+    chatStore.onUserInput(userInput, img).then(() => {
       setIsLoading(false);
-      useCurrentFile.setState({ url: "" });
-      const inputElement = document.getElementById(
-        "myfile",
-      ) as HTMLInputElement;
-      if (inputElement) {
-        inputElement.value = "";
-      }
+      useCurrentFile.setState({ file: null, url: "", shouldCleanImg: true });
     });
     localStorage.setItem(LAST_INPUT_KEY, userInput);
     setUserInput("");
@@ -804,12 +812,6 @@ function _Chat() {
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  useEffect(() => {
-    if (!url) return;
-    setUserInput(url);
-    doSubmit(url);
-  }, [url]);
 
   // check if should send message
   const onInputKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -940,27 +942,27 @@ function _Chat() {
       .concat(
         isLoading
           ? [
-              {
-                ...createMessage({
-                  role: "assistant",
-                  content: "……",
-                }),
-                preview: true,
-              },
-            ]
+            {
+              ...createMessage({
+                role: "assistant",
+                content: "……",
+              }),
+              preview: true,
+            },
+          ]
           : [],
       )
       .concat(
         userInput.length > 0 && config.sendPreviewBubble
           ? [
-              {
-                ...createMessage({
-                  role: "user",
-                  content: userInput,
-                }),
-                preview: true,
-              },
-            ]
+            {
+              ...createMessage({
+                role: "user",
+                content: userInput,
+              }),
+              preview: true,
+            },
+          ]
           : [],
       );
   }, [
@@ -1056,7 +1058,7 @@ function _Chat() {
         if (payload.key || payload.url) {
           showConfirm(
             Locale.URLCommand.Settings +
-              `\n${JSON.stringify(payload, null, 4)}`,
+            `\n${JSON.stringify(payload, null, 4)}`,
           ).then((res) => {
             if (!res) return;
             if (payload.key) {

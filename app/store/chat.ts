@@ -25,6 +25,7 @@ export type ChatMessage = RequestMessage & {
   isError?: boolean;
   id: string;
   model?: ModelType;
+  img?: string;
 };
 
 export function createMessage(override: Partial<ChatMessage>): ChatMessage {
@@ -33,6 +34,7 @@ export function createMessage(override: Partial<ChatMessage>): ChatMessage {
     date: new Date().toLocaleString(),
     role: "user",
     content: "",
+    img: "",
     ...override,
   };
 }
@@ -267,22 +269,29 @@ export const useChatStore = createPersistStore(
         get().summarizeSession();
       },
 
-      async onUserInput(content: string) {
+      async onUserInput(content: string, img: string | null = null) {
         const session = get().currentSession();
         const modelConfig = session.mask.modelConfig;
 
         const userContent = fillTemplateWith(content, modelConfig);
-        console.log("[User Input] after template: ", userContent);
+        console.log("[User Input] after template: ", userContent, img, modelConfig.model);
 
-        const userMessage: ChatMessage = createMessage({
-          role: "user",
-          content: userContent,
-        });
+        const userMessage: ChatMessage = img ?
+          createMessage({
+            role: "user",
+            content: userContent,
+            img: img
+          })
+          : createMessage({
+            role: "user",
+            content: userContent,
+          })
+          ;
 
         const botMessage: ChatMessage = createMessage({
           role: "assistant",
           streaming: true,
-          model: modelConfig.model,
+          model: img ? 'glm-4v' : modelConfig.model,
         });
 
         // get recent messages
@@ -313,7 +322,6 @@ export const useChatStore = createPersistStore(
         } else {
           api = new ClientApi(ModelProvider.GPT);
         }
-        console.log("22222222222", sendMessages);
         // make request
         api.llm.chat({
           messages: sendMessages,
@@ -398,14 +406,14 @@ export const useChatStore = createPersistStore(
         var systemPrompts: ChatMessage[] = [];
         systemPrompts = shouldInjectSystemPrompts
           ? [
-              createMessage({
-                role: "system",
-                content: fillTemplateWith("", {
-                  ...modelConfig,
-                  template: DEFAULT_SYSTEM_TEMPLATE,
-                }),
+            createMessage({
+              role: "system",
+              content: fillTemplateWith("", {
+                ...modelConfig,
+                template: DEFAULT_SYSTEM_TEMPLATE,
               }),
-            ]
+            }),
+          ]
           : [];
         if (shouldInjectSystemPrompts) {
           console.log(
@@ -472,7 +480,6 @@ export const useChatStore = createPersistStore(
         messageIndex: number,
         updater: (message?: ChatMessage) => void,
       ) {
-        console.log("updateMessage ", sessionIndex, messageIndex, updater);
         const sessions = get().sessions;
         const session = sessions.at(sessionIndex);
         const messages = session?.messages;
@@ -518,7 +525,6 @@ export const useChatStore = createPersistStore(
               content: Locale.Store.Prompt.Topic,
             }),
           );
-          console.log("1111111111111111");
           api.llm.chat({
             messages: topicMessages,
             config: {
@@ -527,8 +533,8 @@ export const useChatStore = createPersistStore(
             onFinish(message) {
               get().updateCurrentSession(
                 (session) =>
-                  (session.topic =
-                    message.length > 0 ? trimTopic(message) : DEFAULT_TOPIC),
+                (session.topic =
+                  message.length > 0 ? trimTopic(message) : DEFAULT_TOPIC),
               );
             },
           });

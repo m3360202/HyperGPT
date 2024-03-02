@@ -80,42 +80,38 @@ export class ChatGLMApi implements LLMApi {
   }
 
   getMessagesContext(messages: any[]) {
-    const popMessage = messages[messages.length - 1];
-    if (
-      popMessage &&
-      popMessage.content.indexOf(
-        "https://hypergpt.oss-ap-southeast-1.aliyuncs.com/",
-      ) === 0
-    ) {
-      return [
-        {
-          role: popMessage.role,
+
+    let arr: object[] = [];
+    messages.map((v) => {
+      if (
+        v &&
+        v.img &&
+        v.img.length > 0
+      ) {
+        arr.push({
+          role: v.role,
           content: [
             {
               type: "text",
-              text: "请帮我解答这个图片中文字的问题",
+              text: v.content,
             },
             {
               type: "image_url",
               image_url: {
-                url: popMessage.content,
+                url: v.img,
               },
             },
           ],
-        },
-      ];
-    } else {
-      // Ensure we return an array of messages
-      return messages.map((v) => ({
-        role: v.role,
-        content:
-          v.content.indexOf(
-            "https://hypergpt.oss-ap-southeast-1.aliyuncs.com/",
-          ) === 0
-            ? "上传的图片"
-            : v.content,
-      }));
-    }
+        }
+        );
+      } else {
+        arr.push({
+          role: v.role,
+          content: v.content
+        });
+      }
+    });
+    return arr;
   }
 
   async chat(options: ChatOptions) {
@@ -130,7 +126,7 @@ export class ChatGLMApi implements LLMApi {
     };
 
     const requestPayload = {
-      messages: this.getMessagesContext(messages),
+      messages: messages,
       stream: options.config.stream,
       model: modelConfig.model,
       temperature: modelConfig.temperature,
@@ -148,7 +144,7 @@ export class ChatGLMApi implements LLMApi {
     options.onController?.(controller);
     try {
       const chatPath = this.path(ChatGLM.ChatPath);
-      
+
       const chatPayload = {
         method: "POST",
         body: JSON.stringify(requestPayload),
@@ -233,7 +229,7 @@ export class ChatGLMApi implements LLMApi {
               try {
                 const resJson = await res.clone().json();
                 extraInfo = prettyObject(resJson);
-              } catch {}
+              } catch { }
 
               if (res.status === 401) {
                 responseTexts.push(Locale.Error.Unauthorized);

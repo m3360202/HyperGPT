@@ -18,6 +18,7 @@ export type ChatModel = ModelType;
 export interface RequestMessage {
   role: MessageRole;
   content: string;
+  img : string;
 }
 
 export interface LLMConfig {

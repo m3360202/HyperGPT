@@ -23,7 +23,7 @@ export async function uploadFile(file: any) {
 
     // 上传文件到OSS
     await client.put(fileName, fileBuffer);
-    //console.log("上传成功:", uploadResult);
+    // console.log("上传成功:");
 
     // 更新useCurrentFile store
     useCurrentFile.setState({ id: fileId, url: url });
