@@ -118,7 +118,7 @@ export class ClientApi {
         {
           from: "human",
           value:
-            "Share from [NextChat]: https://github.com/Yidadaa/ChatGPT-Next-Web",
+            "Share from [HyperGpt]: https://hypergpt.aliensoft.com.cn",
         },
       ]);
     // 敬告二开开发者们，为了开源大模型的发展，请不要修改上述消息，此消息用于后续数据清洗使用
@@ -169,7 +169,6 @@ export function getHeaders() {
 
   const makeBearer = (s: string) => `${isAzure ? "" : "Bearer "}${s.trim()}`;
   const validString = (x: string) => x && x.length > 0;
-  console.log("set headers 1", authHeader, headers);
 
   if (isChatGLM) {
     headers[authHeader] = makeBearer(
@@ -185,7 +184,6 @@ export function getHeaders() {
     accessStore.enabledAccessControl() &&
     validString(accessStore.accessCode)
   ) {
-    console.log("set headers 2", authHeader);
     headers[authHeader] = makeBearer(
       ACCESS_CODE_PREFIX + accessStore.accessCode,
     );
