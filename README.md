@@ -17,6 +17,17 @@
 3. 执行 `yarn install && yarn dev` 即可。⚠️ 注意：此命令仅用于本地开发，不要用于部署！
 4. 如果你想本地部署，请使用 `yarn install && yarn build && yarn start` 命令，你可以配合 pm2 来守护进程，防止被杀死，详情询问 ChatGPT。
 
+## 开发
+
+在开始写代码之前，需要在项目根目录新建一个 `.env.local` 文件，里面填入环境变量：
+
+```
+OPENAI_API_KEY=<your api key here>
+
+# 中国大陆用户，可以使用本项目自带的代理进行开发，你也可以自由选择其他代理地址
+BASE_URL=https://b.nextweb.fun/api/proxy
+```
+
 ### `OPENAI_API_KEY` （必填项）
 
 OpanAI 密钥，你在 openai 账户页面申请的 api key，使用英文逗号隔开多个 key，这样可以随机轮询这些 key。
@@ -86,16 +97,6 @@ Google Gemini Pro Api Url.
 
 用来控制模型列表，使用 `+` 增加一个模型，使用 `-` 来隐藏一个模型，使用 `模型名=展示名` 来自定义模型的展示名，用英文逗号隔开。
 
-## 开发
-
-在开始写代码之前，需要在项目根目录新建一个 `.env.local` 文件，里面填入环境变量：
-
-```
-OPENAI_API_KEY=<your api key here>
-
-# 中国大陆用户，可以使用本项目自带的代理进行开发，你也可以自由选择其他代理地址
-BASE_URL=https://b.nextweb.fun/api/proxy
-```
 
 ## 开源协议
 
