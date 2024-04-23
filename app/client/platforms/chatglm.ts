@@ -58,7 +58,7 @@ export class ChatGLMApi implements LLMApi {
   path(path: string): string {
     const accessStore = useAccessStore.getState();
 
-    let baseUrl = CHATGLM_BASE_URL;
+    let baseUrl = "/api/chatglm/";
 
     if (baseUrl.length === 0) {
       const isApp = !!getClientConfig()?.isApp;
