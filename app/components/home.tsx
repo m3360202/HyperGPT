@@ -140,7 +140,6 @@ function Screen() {
   const isHome = location.pathname === Path.Home;
   const isAuth = location.pathname === Path.Auth;
   const isMobileScreen = useMobileScreen();
-  const [showPic, setShowPic] = useState(false)
   const [num, setNum] = useState(15)
   const shouldTightBorder =
     getClientConfig()?.isApp || (config.tightBorder && !isMobileScreen);
@@ -156,16 +155,6 @@ function Screen() {
           
           if(!localStorage.getItem("username")) {
             localStorage.setItem("username", res.data.data.username);
-            console.log('test----')
-            if(res.data.data.username == '18611066087'){
-              setShowPic(true)
-              setTimeout(() => {
-                setShowPic(false)
-              }, 15000)
-              setInterval(() => {
-                setNum(prevNum => prevNum - 1);
-              }, 1000);
-            }
           }
         })
         .catch((err) => {
@@ -205,13 +194,6 @@ function Screen() {
               <Route path={Path.Settings} element={<Settings />} />
             </Routes>
           </div>
-          {showPic && (<div style={{width:'600px', height:'700px',margin:'0 auto',zIndex:'999',backgroundColor:'#fff',borderRadius:'10px',border:'#e4e4e4 1px solid',textAlign:'center',
-        boxShadow:'0 0 10px #ccc',position:'fixed',top:'50%',left:'50%',transform:'translate(-50%,-50%)',padding:'20px',display:'flex',flexDirection:'column',justifyContent:'center',alignItems:'center'
-        }}>
-            <img src="http://bdygj.aliensoft.com.cn/aaa.jpg" width="360" height="640" style={{marginBottom:'20px'}} />
-            Hello明明，我昨天更新了一个新的版本，只是为了在这个无聊的周二早晨say good morning，工作是枯燥的，偶尔来点点缀也是必要的，今天要有好心情
-            窗口将在{num}秒内关闭
-          </div>)}
         </>
       )}
     </div>
