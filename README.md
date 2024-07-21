@@ -1,7 +1,6 @@
 <div align="center">
-<img src="http://papergpt.xinquji.com/assets/icon-kJavj1Pp.png" alt="预览"/>
 
-<h1 align="center">NextChat</h1>
+<h1 align="center">HyperGpt</h1>
 
 简单高效的 ChatGPT 网页应用，支持 GPT3, GPT4 & Glm Pro Glm4v 模型。
 
