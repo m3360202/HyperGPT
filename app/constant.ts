@@ -278,7 +278,7 @@ export const DEFAULT_MODELS = [
     },
   },
   {
-    name: "glm-4v",
+    name: "glm-4v-plus",
     available: true,
     provider: {
       id: "chatglm",

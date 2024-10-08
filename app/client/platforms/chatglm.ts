@@ -315,7 +315,7 @@ export class ChatGLMApi implements LLMApi {
         },
       },
       {
-        name: "glm-4v",
+        name: "glm-4v-plus",
         available: true,
         provider: {
           id: "chatglm",

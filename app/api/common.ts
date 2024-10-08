@@ -312,7 +312,7 @@ export async function requestChatGLM4V(req: NextRequest) {
         );
       }
     } catch (e) {
-      console.error("[ChatGLM] glm-4v filter", e);
+      console.error("[ChatGLM] glm-4v-plus filter", e);
     }
   }
 

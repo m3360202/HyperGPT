@@ -565,7 +565,7 @@ export function ChatActions(props: {
           }}
         />
       )}
-      {modelConfig.model === "glm-4v" && (
+      {modelConfig.model === "glm-4v-plus" && (
         <div
           style={{
             display: "flex",
