@@ -316,7 +316,7 @@ export const useChatStore = createPersistStore(
         if (modelConfig.model === "gemini-pro") {
           api = new ClientApi(ModelProvider.GeminiPro);
         } else if (
-          ["glm-4", "glm-4v", "chatglm_pro"].includes(modelConfig.model)
+          ["glm-4", "glm-4-plus", "glm-4v", "chatglm_pro"].includes(modelConfig.model)
         ) {
           api = new ClientApi(ModelProvider.GLM);
         } else {
@@ -502,7 +502,7 @@ export const useChatStore = createPersistStore(
         if (modelConfig.model === "gemini-pro") {
           api = new ClientApi(ModelProvider.GeminiPro);
         } else if (
-          ["glm-4", "glm-4v", "chatglm_pro"].includes(modelConfig.model)
+          ["glm-4", "glm-4-plus", "glm-4v", "chatglm_pro"].includes(modelConfig.model)
         ) {
           api = new ClientApi(ModelProvider.GLM);
         } else {
