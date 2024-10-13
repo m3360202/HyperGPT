@@ -296,15 +296,15 @@ export class ChatGLMApi implements LLMApi {
 
   async models(): Promise<LLMModel[]> {
     return [
-      {
-        name: "glm-4",
-        available: true,
-        provider: {
-          id: "chatglm",
-          providerName: "ChatGLM",
-          providerType: "chatglm",
-        },
-      },
+      // {
+      //   name: "glm-4",
+      //   available: true,
+      //   provider: {
+      //     id: "chatglm",
+      //     providerName: "ChatGLM",
+      //     providerType: "chatglm",
+      //   },
+      // },
       {
         name: "glm-4-plus",
         available: true,
@@ -323,15 +323,15 @@ export class ChatGLMApi implements LLMApi {
           providerType: "chatglm",
         },
       },
-      {
-        name: "chatglm_pro",
-        available: true,
-        provider: {
-          id: "chatglm",
-          providerName: "ChatGLM",
-          providerType: "chatglm",
-        },
-      },
+      // {
+      //   name: "chatglm_pro",
+      //   available: true,
+      //   provider: {
+      //     id: "chatglm",
+      //     providerName: "ChatGLM",
+      //     providerType: "chatglm",
+      //   },
+      // },
     ];
   }
 }

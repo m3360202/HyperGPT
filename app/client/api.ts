@@ -155,7 +155,7 @@ export function getHeaders() {
     Accept: "application/json",
   };
   const modelConfig = useChatStore.getState().currentSession().mask.modelConfig;
-  const isChatGLM = ["glm-4", "glm-4-plus", "glm-4v-plus", "chatglm_pro"].includes(
+  const isChatGLM = ["glm-4-plus", "glm-4v-plus", "chatglm_pro"].includes(
     modelConfig.model,
   );
   const isGoogle = modelConfig.model === "gemini-pro";

@@ -259,15 +259,15 @@ export const DEFAULT_MODELS = [
       providerType: "google",
     },
   },
-  {
-    name: "glm-4",
-    available: true,
-    provider: {
-      id: "chatglm",
-      providerName: "ChatGLM",
-      providerType: "chatglm",
-    },
-  },
+  // {
+  //   name: "glm-4",
+  //   available: true,
+  //   provider: {
+  //     id: "chatglm",
+  //     providerName: "ChatGLM",
+  //     providerType: "chatglm",
+  //   },
+  // },
   {
     name: "glm-4-plus",
     available: true,
@@ -286,15 +286,15 @@ export const DEFAULT_MODELS = [
       providerType: "chatglm",
     },
   },
-  {
-    name: "glm_pro",
-    available: true,
-    provider: {
-      id: "chatglm",
-      providerName: "ChatGLM",
-      providerType: "chatglm",
-    },
-  },
+  // {
+  //   name: "glm_pro",
+  //   available: true,
+  //   provider: {
+  //     id: "chatglm",
+  //     providerName: "ChatGLM",
+  //     providerType: "chatglm",
+  //   },
+  // },
 ] as const;
 
 export const CHAT_PAGE_SIZE = 15;
