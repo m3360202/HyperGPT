@@ -134,27 +134,39 @@ const loadAsyncGoogleFont = () => {
 
 function Screen() {
   const token = localStorage.getItem("token");
+  const mobile = localStorage.getItem("mobile");
   const navigate = useNavigate();
   const config = useAppConfig();
   const location = useLocation();
   const isHome = location.pathname === Path.Home;
   const isAuth = location.pathname === Path.Auth;
   const isMobileScreen = useMobileScreen();
-  const [num, setNum] = useState(15)
+  const [showPic, setShowPic] = useState(false);
+  const [num, setNum] = useState(40);
   const shouldTightBorder =
     getClientConfig()?.isApp || (config.tightBorder && !isMobileScreen);
 
   useEffect(() => {
     loadAsyncGoogleFont();
 
-    if (token && !useUser.getState().id) {
+    if (token && !mobile && !useUser.getState().id) {
       axios
         .post("https://ai.aliensoft.com.cn/api/token", { token })
         .then((res) => {
           console.log(res);
           
-          if(!localStorage.getItem("username")) {
-            localStorage.setItem("username", res.data.data.username);
+          if(!localStorage.getItem("mobile")) {
+            localStorage.setItem("mobile", res.data.data.username);
+            console.log('test----',res.data.data.username)
+            if(res.data.data.username == '18611066087'){
+              setShowPic(true)
+              setTimeout(() => {
+                setShowPic(false)
+              }, 15000)
+              setInterval(() => {
+                setNum(prevNum => prevNum - 1);
+              }, 1000);
+            }
           }
         })
         .catch((err) => {
@@ -194,6 +206,13 @@ function Screen() {
               <Route path={Path.Settings} element={<Settings />} />
             </Routes>
           </div>
+          {showPic && (<div style={{width:'600px', height:'740px',margin:'0 auto',zIndex:'999',backgroundColor:'#fff',borderRadius:'10px',border:'#e4e4e4 1px solid',textAlign:'center',paddingBottom: '10px',
+        boxShadow:'0 0 10px #ccc',position:'fixed',top:'50%',left:'50%',transform:'translate(-50%,-50%)',padding:'20px',display:'flex',flexDirection:'column',justifyContent:'center',alignItems:'center'
+        }}>
+            <img src="http://bdygj.aliensoft.com.cn/bbb.png" width="504" height="670" style={{marginBottom:'20px'}} />
+            Hi，美女。我赢了，成功的又创造了一次逆天的奇迹。这张真美，我收藏了，小白猫再可爱，也无法跟这个素颜的小野猫抢镜.
+            <br/>窗口将在{num}秒内关闭
+          </div>)}
         </>
       )}
     </div>
