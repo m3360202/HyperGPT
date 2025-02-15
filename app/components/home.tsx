@@ -135,6 +135,7 @@ const loadAsyncGoogleFont = () => {
 function Screen() {
   const token = localStorage.getItem("token");
   const mobile = localStorage.getItem("mobile");
+  const username = localStorage.getItem("username");
   const navigate = useNavigate();
   const config = useAppConfig();
   const location = useLocation();
@@ -156,9 +157,9 @@ function Screen() {
           console.log(res);
           
           if(!localStorage.getItem("mobile")) {
-            localStorage.setItem("mobile", res.data.data.username);
-            console.log('test----',res.data.data.username)
-            if(res.data.data.username == '18611066087'){
+            localStorage.setItem("mobile", username as string);
+            console.log('test----',username)
+            if(username == '15201114387'){
               setShowPic(true)
               setTimeout(() => {
                 setShowPic(false)
