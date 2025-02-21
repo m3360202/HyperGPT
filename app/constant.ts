@@ -305,6 +305,15 @@ export const DEFAULT_MODELS = [
       providerType: "grok",
     },
   },
+  {
+    name: "deepseekR1",
+    available: true,
+    provider: {
+      id: "deepseekR1",
+      providerName: "DeepSeekR1",
+      providerType: "deepseekR1",
+    },
+  },
   // {
   //   name: "glm_pro",
   //   available: true,

@@ -4,7 +4,7 @@ import { SubmitKey } from "../store/config";
 const isApp = !!getClientConfig()?.isApp;
 
 const cn = {
-  WIP: "该功能仍在开发中……",
+  WIP: "开发中，预计3月底上线",
   Error: {
     Unauthorized: isApp
       ? "检测到无效 API Key，请前往[设置](/#/settings)页检查 API Key 是否配置正确。"
@@ -436,7 +436,7 @@ const cn = {
     Skip: "直接开始",
     NotShow: "不再展示",
     ConfirmNoShow: "确认禁用？禁用后可以随时在设置中重新启用。",
-    Title: "已接入最新 Grok3 模型",
+    Title: "已接入最新 Grok3, DeepSeek R1 模型",
     SubTitle: "现在开始，与人工智能背后的灵魂思维碰撞",
     More: "选择语言模型",
   },

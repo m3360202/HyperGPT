@@ -16,29 +16,21 @@ import ExportIcon from "../icons/share.svg";
 import ReturnIcon from "../icons/return.svg";
 import CopyIcon from "../icons/copy.svg";
 import LoadingIcon from "../icons/three-dots.svg";
-import PromptIcon from "../icons/prompt.svg";
-import RoleIcon from "../icons/role.svg";
 import MaxIcon from "../icons/max.svg";
 import MinIcon from "../icons/min.svg";
 import ResetIcon from "../icons/reload.svg";
-import BreakIcon from "../icons/break.svg";
-import SettingsIcon from "../icons/chat-settings.svg";
 import DeleteIcon from "../icons/clear.svg";
 import PinIcon from "../icons/pin.svg";
 import EditIcon from "../icons/rename.svg";
 import ConfirmIcon from "../icons/confirm.svg";
 import CancelIcon from "../icons/cancel.svg";
 
-import LightIcon from "../icons/light.svg";
-import DarkIcon from "../icons/dark.svg";
-import AutoIcon from "../icons/auto.svg";
 import BottomIcon from "../icons/bottom.svg";
 import StopIcon from "../icons/pause.svg";
-import RobotIcon from "../icons/robot.svg";
-import { Uploader } from "react-vant";
 import {
   ChatMessage,
   SubmitKey,
+  useChatSettings,
   useChatStore,
   BOT_HELLO,
   createMessage,
@@ -47,6 +39,7 @@ import {
   useAppConfig,
   DEFAULT_TOPIC,
   ModelType,
+
 } from "../store";
 
 import {
@@ -332,46 +325,33 @@ function ClearContextDivider() {
 function ChatAction(props: {
   text: string;
   icon: JSX.Element;
+  selected?: boolean;
   onClick: () => void;
 }) {
   const iconRef = useRef<HTMLDivElement>(null);
   const textRef = useRef<HTMLDivElement>(null);
-  const [width, setWidth] = useState({
-    full: 16,
-    icon: 16,
-  });
-
-  function updateWidth() {
-    if (!iconRef.current || !textRef.current) return;
-    const getWidth = (dom: HTMLDivElement) => dom.getBoundingClientRect().width;
-    const textWidth = getWidth(textRef.current);
-    const iconWidth = getWidth(iconRef.current);
-    setWidth({
-      full: textWidth + iconWidth,
-      icon: iconWidth,
-    });
-  }
 
   return (
     <div
       className={`${styles["chat-input-action"]} clickable`}
       onClick={() => {
         props.onClick();
-        setTimeout(updateWidth, 1);
       }}
-      onMouseEnter={updateWidth}
-      onTouchStart={updateWidth}
       style={
         {
-          "--icon-width": `${width.icon}px`,
-          "--full-width": `${width.full}px`,
-        } as React.CSSProperties
+          width: 'max-content',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '4px',
+          color: props.selected ? '#fff' : '#1c252e',
+          backgroundColor: props.selected ? 'rgb(29, 147, 171)' : '',
+        }
       }
     >
-      <div ref={iconRef} className={styles["icon"]}>
+      <div ref={iconRef}>
         {props.icon}
       </div>
-      <div className={styles["text"]} ref={textRef}>
+      <div ref={textRef}>
         {props.text}
       </div>
     </div>
@@ -417,6 +397,7 @@ export function ChatActions(props: {
   const config = useAppConfig();
   const navigate = useNavigate();
   const chatStore = useChatStore();
+  const { useReasoner } = useChatSettings();
   const modelConfig = useChatStore.getState().currentSession().mask.modelConfig;
   const shouldCleanImg = useCurrentFile.getState().shouldCleanImg;
   const imgMaxCount = 1;
@@ -442,10 +423,10 @@ export function ChatActions(props: {
     [allModels],
   );
   const [showModelSelector, setShowModelSelector] = useState(false);
-  const [tasks, setTasks] = React.useState([]);
+  const [tasks, setTasks] = React.useState<any | null>(null);
   const handleSetImg = (file: any) => {
-    if (file && file[0] && file[0].file) {
-      useCurrentFile.setState({ file: file[0].file });
+    if (file && file[0]) {
+      useCurrentFile.setState({ file: file[0] });
     }
   };
 
@@ -464,7 +445,7 @@ export function ChatActions(props: {
 
   useEffect(() => {
     if (shouldCleanImg) {
-      setTasks([]);
+      setTasks(null);
       useCurrentFile.setState({ file: null, url: "", shouldCleanImg: false });
     }
   }, [shouldCleanImg]);
@@ -490,25 +471,14 @@ export function ChatActions(props: {
         <ChatAction
           onClick={props.showPromptModal}
           text={Locale.Chat.InputActions.Settings}
-          icon={<SettingsIcon />}
+          icon={
+            <svg style={{ marginTop: '3px' }} viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" width="14" height="14">
+              <path d="M419.539168 950.854073l-37.358863-107.437941-47.571459-22.890336-107.306958 37.748742-115.745141-145.084353 60.70764-96.213295-11.768021-51.456952-96.404654-60.34539 41.271986-180.879604 113.130593-12.606109 32.878828-41.252543-12.985756-113.025193 167.181627-80.503499 80.30907 80.571037 52.79953 0 80.319304-80.571037 167.171394 80.503499-12.975523 112.962771 32.901341 41.314964 113.134687 12.606109 41.2331 180.879604-96.366791 60.350506-11.738345 51.451836 60.706617 96.208179L797.325397 858.275561l-107.312074-37.748742-47.542806 22.890336-37.383422 107.437941L419.539168 950.855096 419.539168 950.854073zM459.363176 894.805546l105.799628 0 31.934317-91.722004 89.517803-43.144636 91.683119 32.266891 66.025763-82.794681-51.768037-82.167395 22.096251-96.843652 82.371032-51.601238L873.496218 375.628076l-96.645131-10.747785-61.944817-77.630055 11.079336-96.505961-95.375208-45.950542-68.629054 68.797899-99.369172 0-68.635193-68.797899-95.370091 45.950542 11.079336 96.511077-61.910025 77.624938-96.645131 10.747785L127.600143 478.834646l82.33624 51.566446 22.125927 96.838535-51.861158 82.167395 66.025763 82.799798 91.680049-32.266891 89.521896 43.144636L459.363176 894.805546 459.363176 894.805546zM512.214894 681.236426c-92.651167 0-168.022785-75.396177-168.022785-168.065763 0-92.63684 75.372641-167.999249 168.022785-167.999249 92.65219 0 168.033018 75.362408 168.033018 167.999249C680.247912 605.841272 604.866061 681.236426 512.214894 681.236426L512.214894 681.236426zM512.214894 396.796188c-64.277956 0-116.570949 52.292993-116.570949 116.566856 0 64.316841 52.292993 116.644627 116.570949 116.644627 64.298422 0 116.605741-52.327786 116.605741-116.644627C628.820636 449.089182 576.512293 396.796188 512.214894 396.796188L512.214894 396.796188zM512.214894 396.796188" fill="#637381">
+              </path>
+            </svg>
+            }
         />
       )}
-
-      <ChatAction
-        onClick={nextTheme}
-        text={Locale.Chat.InputActions.Theme[theme]}
-        icon={
-          <>
-            {theme === Theme.Auto ? (
-              <AutoIcon />
-            ) : theme === Theme.Light ? (
-              <LightIcon />
-            ) : theme === Theme.Dark ? (
-              <DarkIcon />
-            ) : null}
-          </>
-        }
-      />
 
       {/* <ChatAction
         onClick={props.showPromptHints}
@@ -524,7 +494,7 @@ export function ChatActions(props: {
         icon={<RoleIcon />}
       /> */}
 
-      <ChatAction
+      {/* <ChatAction
         text={Locale.Chat.InputActions.Clear}
         icon={<BreakIcon />}
         onClick={() => {
@@ -537,12 +507,17 @@ export function ChatActions(props: {
             }
           });
         }}
-      />
+      /> */}
 
       <ChatAction
         onClick={() => setShowModelSelector(true)}
         text={currentModel}
-        icon={<RobotIcon />}
+        icon={
+          <svg style={{ marginTop: '3px' }} viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" width="14" height="14">
+            <path d="M558.09543 0a461.914983 461.914983 0 0 1 462.112523 461.914983 550.610561 550.610561 0 0 1-119.775246 344.576067 34.240312 34.240312 0 1 1-50.702001-46.092729 484.50042 484.50042 0 0 0 102.062469-298.549185 393.500205 393.500205 0 0 0-787.00041 0 34.240312 34.240312 0 0 1-4.543426 16.988463q-28.248258 49.450913-85.074007 143.480078l-2.568023 3.687418 105.947428 17.976164a34.240312 34.240312 0 0 1 28.379951 30.882128l23.375598 280.573021 10.733021-0.790161 158.624832-12.247496a34.240312 34.240312 0 1 1 5.26774 68.217238l-169.292006 13.169351a68.414778 68.414778 0 0 1-73.419131-62.48857l-21.202655-254.168473-79.74042-13.498585a68.414778 68.414778 0 0 1-56.694056-73.814212l0.658468-5.0702a68.414778 68.414778 0 0 1 10.601327-26.667935l1.712016-2.370483 6.584675-10.864715q43.656398-72.43143 68.941552-116.021981l3.555725-6.123749v-1.316935A461.98083 461.98083 0 0 1 547.494102 0z m153.949712 307.965271a34.240312 34.240312 0 0 1 34.240312 34.240312v307.965271a34.240312 34.240312 0 1 1-68.414778 0V342.403124a34.240312 34.240312 0 0 1 34.240313-34.437853z m-186.543856 22.058663l115.890288 305.265554a34.240312 34.240312 0 0 1-64.003045 24.297452l-29.82858-78.555178a34.372006 34.372006 0 0 1-6.584675 0.658468H434.303531l-32.923377 81.452435a34.240312 34.240312 0 0 1-40.693294 20.2808l-3.753265-1.251088a34.240312 34.240312 0 0 1-19.029712-44.512406L461.827475 329.233773a34.240312 34.240312 0 0 1 63.739658 0.790161z m-32.923377 106.144968l-30.947974 77.040703h60.183933z" fill="#637381">
+            </path>
+          </svg>
+          }
       />
 
       {showModelSelector && (
@@ -563,26 +538,64 @@ export function ChatActions(props: {
           }}
         />
       )}
-      {modelConfig.model === "glm-4v-plus" && (
+
+      <ChatAction
+        onClick={()=>{
+          useChatSettings.setState({
+            useReasoner: !useReasoner
+          })
+        }}
+        selected={useReasoner}
+        text={'深度思索'}
+        icon={
+          <svg style={{ marginTop: '3px' }} viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" width="14" height="14">
+            <path d="M927.485057 673.83908v-323.67816a84.156322 84.156322 0 0 0 55.319541-80.625288 82.97931 82.97931 0 0 0-155.365518-42.960919L594.97931 100.045977A86.510345 86.510345 0 0 0 512 11.770115a84.744828 84.744828 0 0 0-82.97931 88.275862L196.56092 223.632184a87.687356 87.687356 0 0 0-72.386207-42.96092A83.567816 83.567816 0 0 0 41.195402 267.181609a83.567816 83.567816 0 0 0 55.319541 80.036782v326.620689a85.921839 85.921839 0 0 0 27.65977 166.547127 82.97931 82.97931 0 0 0 72.386207-42.96092l235.402298 128.882759A86.510345 86.510345 0 0 0 512 1012.229885a84.744828 84.744828 0 0 0 82.97931-88.275862l232.45977-128.882759a82.97931 82.97931 0 0 0 155.365518-40.606896 87.098851 87.098851 0 0 0-55.319541-80.625288z m-772.708046 0h-2.942528v-323.67816l25.305747-14.712644 226.574713 131.825287a130.05977 130.05977 0 0 0-5.296552 28.836782 124.174713 124.174713 0 0 0 5.296552 28.836781z m329.563219 176.551725a85.921839 85.921839 0 0 0-35.898851 25.894252l-241.287356-134.767816a58.850575 58.850575 0 0 0-10.593103-22.951724l235.402298-137.710345a105.342529 105.342529 0 0 0 52.377012 31.779311z m0-461.388506a117.701149 117.701149 0 0 0-52.377012 31.77931L204.8 284.248276l240.698851-134.767816a106.51954 106.51954 0 0 0 38.841379 28.836781z m52.377011-208.91954a91.806897 91.806897 0 0 0 34.133334-27.65977l240.69885 134.767816-221.866666 131.825287a110.050575 110.050575 0 0 0-52.965518-31.77931z m282.482759 558.491954l-240.698851 134.767816a121.232184 121.232184 0 0 0-38.841379-25.894253v-235.402299a124.763218 124.763218 0 0 0 52.377012-31.190805l235.402298 137.121839c-2.354023 4.708046-5.296552 10.593103-8.23908 18.832184z m52.965517-58.850575c0-5.885057 0-5.885057 0 0l-251.88046-151.834483a124.174713 124.174713 0 0 0 5.296552-28.836781 124.174713 124.174713 0 0 0-5.296552-28.836782l226.574713-134.767816 25.305747 17.655172z" fill={useReasoner ? '#fff' : '#637381'}>
+            </path>
+          </svg>
+        }
+      />
+
+      {(modelConfig.model === "glm-4v-plus" || modelConfig.model === "deepseekR1") && (
         <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            marginTop: "-10px",
-            marginRight: "6px",
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          marginTop: "-10px",
+          marginRight: "6px",
+          cursor: 'pointer'
+        }}
+      >
+        <svg
+          viewBox="0 0 1024 1024"  
+          xmlns="http://www.w3.org/2000/svg"  
+          width="24" 
+          height="24" 
+          onClick={() => {
+            // 你可以在这里添加点击事件处理逻辑，例如打开文件选择对话框
+            document.getElementById('fileInput')?.click();
+          }}>
+          <path d="M797.312 198.656a241.92 241.92 0 0 0-341.76 0L194.688 459.456a8.96 8.96 0 0 0-2.624 6.4 8.96 8.96 0 0 0 2.56 6.4l36.928 36.864a8.96 8.96 0 0 0 12.736 0L505.216 248.32a170.432 170.432 0 0 1 121.28-50.176c45.824 0 88.96 17.792 121.216 50.176 32.384 32.448 50.176 75.52 50.176 121.216a170.24 170.24 0 0 1-50.176 121.216l-265.984 265.92-43.136 43.072a103.36 103.36 0 0 1-176.32-72.96c0-27.648 10.752-53.504 30.208-73.024l263.936-263.808a35.264 35.264 0 0 1 24.896-10.304h0.064c9.408 0 18.112 3.712 24.704 10.304a34.88 34.88 0 0 1 0 49.6L390.4 655.04a8.96 8.96 0 0 0-2.56 6.4 8.96 8.96 0 0 0 2.56 6.4l36.928 36.928a8.96 8.96 0 0 0 12.672 0l215.616-215.616c19.84-19.904 30.784-46.272 30.784-74.432 0-28.096-11.008-54.592-30.784-74.368a105.536 105.536 0 0 0-148.992 0l-25.6 25.728-238.208 238.08A172.16 172.16 0 0 0 192 726.848a173.248 173.248 0 0 0 173.44 173.184 172.8 172.8 0 0 0 122.688-50.688l309.12-308.992a240.448 240.448 0 0 0 70.784-170.816 239.68 239.68 0 0 0-70.72-170.88z" fill="#7F7F7F">
+          </path>
+        </svg>
+        {tasks && (
+          <div style={{ fontSize: '14px', color: '#637381'}}>
+            已上传附件
+          </div>
+        )}
+        <input
+          type="file"
+          id="fileInput"
+          style={{ display: 'none' }}
+          onChange={(e) => {
+            const files = e.target.files;
+            if (files && files.length > 0) {
+              setTasks(files);
+              handleSetImg(files);
+            }
           }}
-        >
-          <Uploader
-            value={tasks}
-            accept="*"
-            maxCount={imgMaxCount}
-            onChange={(v: any) => {
-              setTasks(v);
-              handleSetImg(v);
-            }}
-          />
-        </div>
+        />
+      </div>
       )}
     </div>
   );
@@ -654,6 +667,7 @@ function _Chat() {
   type RenderMessage = ChatMessage & { preview?: boolean };
 
   const chatStore = useChatStore();
+  const { useReasoner } = useChatSettings();
   const session = chatStore.currentSession();
   const config = useAppConfig();
   const fontSize = config.fontSize;
@@ -663,6 +677,7 @@ function _Chat() {
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const [userInput, setUserInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [submitDisable, setSubmitDisable] = useState(false);
   const { submitKey, shouldSubmit } = useSubmitHandler();
   const { scrollRef, setAutoScroll, scrollDomToBottom } = useScrollToBottom();
@@ -740,7 +755,7 @@ function _Chat() {
     if (userInput.trim() === "") return;
     const matchCommand = chatCommands.match(userInput);
     const currentFile = useCurrentFile.getState().file ?? { name: "" };
-
+    setLoading(true);
     if (currentFile.name.length > 0) {
       await uploadFile(currentFile);
     }
@@ -750,12 +765,13 @@ function _Chat() {
       setUserInput("");
       setPromptHints([]);
       matchCommand.invoke();
-
+      setLoading(false);
       return;
     }
 
     chatStore.onUserInput(userInput, img).then(() => {
       setIsLoading(false);
+      setLoading(false);
       useCurrentFile.setState({ file: null, url: "", shouldCleanImg: true });
     });
     localStorage.setItem(LAST_INPUT_KEY, userInput);
@@ -1351,6 +1367,7 @@ function _Chat() {
             }}
           />
           <IconButton
+            disabled={loading}
             icon={<SendWhiteIcon />}
             text={Locale.Chat.Send}
             className={styles["chat-input-send"]}

@@ -158,7 +158,7 @@ export function SideBar(props: { className?: string }) {
           HyperGPT
         </div>
         <div className={styles["sidebar-sub-title"]}>
-          跨时代的Ai语言交互,已接入Grok3.
+          跨时代的AI,已接入Grok3, DeepSeek R1.
         </div>
         <div className={styles["sidebar-logo"] + " no-dark"}>
           <ChatGptIcon />
@@ -168,7 +168,7 @@ export function SideBar(props: { className?: string }) {
       <div className={styles["sidebar-header-bar"]}>
         <IconButton
           icon={<RoleIcon />}
-          text={shouldNarrow ? undefined : Locale.Mask.Name}
+          text={shouldNarrow ? undefined : 'AI会话'}
           className={styles["sidebar-bar-button"]}
           onClick={() => {
             if (config.dontShowMaskSplashScreen !== true) {
@@ -181,7 +181,7 @@ export function SideBar(props: { className?: string }) {
         />
         <IconButton
           icon={<PluginIcon />}
-          text={shouldNarrow ? undefined : Locale.Plugin.Name}
+          text={shouldNarrow ? undefined : '语音模式'}
           className={styles["sidebar-bar-button"]}
           onClick={() => showToast(Locale.WIP)}
           shadow

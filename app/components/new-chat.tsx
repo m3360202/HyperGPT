@@ -146,7 +146,14 @@ export function NewChat() {
 
       <div className={styles["title"]}>{Locale.NewChat.Title}</div>
       <div className={styles["sub-title"]}>{Locale.NewChat.SubTitle}</div>
-
+      
+      <div style={{ display: 'flex', alignItems: 'start', justifyContent: 'start', flexDirection: 'column', gap: '10px', marginTop: '20px'}}>
+        <div className={styles["sub-title"]}>最新迭代功能：</div>
+        <div style={{ color: '#637381', fontSize: '14px' }}>1.接入Deepseek R1 模型</div>
+        <div style={{ color: '#637381', fontSize: '14px' }}>2.深度思索功能和Reasoner功能现在对全部用户开放</div>
+        <div style={{ color: '#637381', fontSize: '14px' }}>3.Grok3 返回图文功能即将开放</div>
+        <div style={{ color: '#637381', fontSize: '14px' }}>4.Glm-zero-preview 语音交互功能开放内测，有需要体验的用户请联系开发者</div>
+      </div>
       <div className={styles["actions"]}>
         <IconButton
           text={Locale.NewChat.Skip}
@@ -156,13 +163,13 @@ export function NewChat() {
           shadow
           className={styles["skip"]}
         />
-        <IconButton
+        {/* <IconButton
           text={Locale.NewChat.More}
           onClick={() => navigate(Path.Masks)}
           icon={<EyeIcon />}
           bordered
           shadow
-        />
+        /> */}
       </div>
 
       <div className={styles["masks"]} ref={maskRef}>
