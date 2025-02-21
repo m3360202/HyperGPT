@@ -34,6 +34,9 @@ declare global {
       //glm
       GLM_APP_KEY?: string;
 
+      //grok
+      GROK_APP_KEY?: string;
+
       //oss
       OSS_APP_ID?: string;
       OSS_APP_SECRET?: string;
@@ -66,7 +69,7 @@ export const getServerSideConfig = () => {
 
   const disableGPT4 = !!process.env.DISABLE_GPT4;
   let customModels =
-    process.env.CUSTOM_MODELS ?? "-all,+glm-4-plus,+glm-4v-plus";
+    process.env.CUSTOM_MODELS ?? "-all,+grok,+glm-4-plus,+glm-4v-plus";
 
   if (disableGPT4) {
     if (customModels) customModels += ",";
@@ -114,6 +117,8 @@ export const getServerSideConfig = () => {
     customModels,
 
     glmAppKey: process.env.NEXT_PUBLIC_GLM_APP_KEY,
+
+    grokAppKey: process.env.NEXT_PUBLIC_GROK_KEY,
 
     ossAppId: process.env.NEXT_PUBLIC_OSS_APP_ID,
     ossAppSecret: process.env.NEXT_PUBLIC_OSS_APP_SECRET,

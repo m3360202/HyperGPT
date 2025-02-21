@@ -272,7 +272,7 @@ export function RenderExport(props: {
         role: role as any,
         content: role === "user" ? v.textContent ?? "" : v.innerHTML,
         date: "",
-        img:""
+        img: "",
       };
     });
 
@@ -314,6 +314,8 @@ export function PreviewActions(props: {
       ["glm-4-plus", "glm-4v-plus"].includes(config.modelConfig.model)
     ) {
       api = new ClientApi(ModelProvider.GLM);
+    } else if (["grok"].includes(config.modelConfig.model)) {
+      api = new ClientApi(ModelProvider.Grok);
     } else {
       api = new ClientApi(ModelProvider.GLM);
     }

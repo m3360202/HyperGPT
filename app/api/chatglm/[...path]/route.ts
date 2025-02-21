@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth, chatglmAuth } from "../../auth";
+import { auth, chatglmAuth, grokAuth } from "../../auth";
 import { prettyObject } from "@/app/utils/format";
-import { ChatGLM, ModelProvider } from "@/app/constant";
+import { ChatGLM, Grok, ModelProvider } from "@/app/constant";
 
 import { SignJWT } from "jose";
-import { requestChatGLM } from "../../common";
+import { requestChatGLM, requestGrok } from "../../common";
 
 async function generateToken(
   apikey: string,

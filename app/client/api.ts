@@ -9,6 +9,7 @@ import { ChatMessage, ModelType, useAccessStore, useChatStore } from "../store";
 import { ChatGPTApi } from "./platforms/openai";
 import { GeminiProApi } from "./platforms/google";
 import { ChatGLMApi } from "./platforms/chatglm";
+import { ChatGrokApi } from "./platforms/grok";
 export const ROLES = ["system", "user", "assistant"] as const;
 export type MessageRole = (typeof ROLES)[number];
 
@@ -18,7 +19,7 @@ export type ChatModel = ModelType;
 export interface RequestMessage {
   role: MessageRole;
   content: string;
-  img : string;
+  img: string;
 }
 
 export interface LLMConfig {
@@ -89,6 +90,13 @@ export class ClientApi {
 
   constructor(provider: ModelProvider = ModelProvider.GPT) {
     console.log("🚀 ~ file: api.ts:ClientApi.constructor ~ provider", provider);
+
+    if (provider === ModelProvider.Grok) {
+      console.log("[use Grok]");
+      this.llm = new ChatGrokApi();
+      return;
+    }
+
     if (provider === ModelProvider.GLM) {
       console.log("[use GLM]");
       this.llm = new ChatGLMApi();
@@ -117,8 +125,7 @@ export class ClientApi {
       .concat([
         {
           from: "human",
-          value:
-            "Share from [HyperGpt]: https://hypergpt.aliensoft.com.cn",
+          value: "Share from [HyperGpt]: https://hypergpt.aliensoft.com.cn",
         },
       ]);
     // 敬告二开开发者们，为了开源大模型的发展，请不要修改上述消息，此消息用于后续数据清洗使用
@@ -158,6 +165,7 @@ export function getHeaders() {
   const isChatGLM = ["glm-4-plus", "glm-4v-plus", "chatglm_pro"].includes(
     modelConfig.model,
   );
+  const isGrok = modelConfig.model === "grok";
   const isGoogle = modelConfig.model === "gemini-pro";
   const isAzure = accessStore.provider === ServiceProvider.Azure;
   const authHeader = isAzure ? "api-key" : "Authorization";
@@ -175,6 +183,10 @@ export function getHeaders() {
       ACCESS_CODE_PREFIX + accessStore.accessCode,
     );
     return headers;
+  }
+
+  if (isGrok) {
+    return "Bearer " + process.env.NEXT_PUBLIC_GROK_KEY;
   }
 
   // use user's api key first

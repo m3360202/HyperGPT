@@ -391,7 +391,7 @@ const cn = {
     Sysmessage: "你是一个助手",
   },
   Mask: {
-    Name: "角色",
+    Name: "会话",
     Page: {
       Title: "预设角色模型",
       SubTitle: (count: number) => `${count} 个预设角色定义`,
@@ -436,9 +436,9 @@ const cn = {
     Skip: "直接开始",
     NotShow: "不再展示",
     ConfirmNoShow: "确认禁用？禁用后可以随时在设置中重新启用。",
-    Title: "挑选一个角色",
-    SubTitle: "现在开始，与角色背后的灵魂思维碰撞",
-    More: "查看全部",
+    Title: "已接入最新 Grok3 模型",
+    SubTitle: "现在开始，与人工智能背后的灵魂思维碰撞",
+    More: "选择语言模型",
   },
 
   URLCommand: {

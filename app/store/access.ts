@@ -34,6 +34,8 @@ const DEFAULT_ACCESS_STATE = {
   googleApiKey: "",
   googleApiVersion: "v1",
 
+  grokAppKey: "",
+
   // server config
   needCode: true,
   hideUserApiKey: false,
@@ -67,6 +69,10 @@ export const useAccessStore = createPersistStore(
 
     isValidChatGLM() {
       return ensure(get(), ["googleApiKey"]);
+    },
+
+    isValidGrok() {
+      return ensure(get(), ["grokAppKey"]);
     },
 
     isAuthorized() {

@@ -111,9 +111,27 @@ export async function chatglmAuth(
   console.log("[Auth] got chatglmAuth token: ", authToken);
 
   if (!authToken) {
-    const token = await generateToken(process.env.NEXT_PUBLIC_GLM_APP_KEY ?? "", 3600);
+    const token = await generateToken(
+      process.env.NEXT_PUBLIC_GLM_APP_KEY ?? "",
+      3600,
+    );
     req.headers.set("Authorization", token);
   }
+
+  return {
+    error: false,
+  };
+}
+
+export async function grokAuth(req: NextRequest, modelProvider: ModelProvider) {
+  console.log(
+    "[Auth] got grokAuth token: ",
+    "Bearer " + process.env.NEXT_PUBLIC_GROK_KEY,
+  );
+  req.headers.set(
+    "Authorization",
+    "Bearer " + process.env.NEXT_PUBLIC_GROK_KEY,
+  );
 
   return {
     error: false,

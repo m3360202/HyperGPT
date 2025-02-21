@@ -140,7 +140,7 @@ function Screen() {
   const isHome = location.pathname === Path.Home;
   const isAuth = location.pathname === Path.Auth;
   const isMobileScreen = useMobileScreen();
-  const [num, setNum] = useState(15)
+  const [num, setNum] = useState(15);
   const shouldTightBorder =
     getClientConfig()?.isApp || (config.tightBorder && !isMobileScreen);
 
@@ -152,8 +152,8 @@ function Screen() {
         .post("https://ai.aliensoft.com.cn/api/token", { token })
         .then((res) => {
           console.log(res);
-          
-          if(!localStorage.getItem("username")) {
+
+          if (!localStorage.getItem("username")) {
             localStorage.setItem("username", res.data.data.username);
           }
         })
@@ -206,10 +206,10 @@ export function useLoadData() {
   var api: ClientApi;
   if (config.modelConfig.model === "gemini-pro") {
     api = new ClientApi(ModelProvider.GeminiPro);
-  } else if (
-    ["glm-4-plus", "glm-4v-plus"].includes(config.modelConfig.model)
-  ) {
+  } else if (["glm-4-plus", "glm-4v-plus"].includes(config.modelConfig.model)) {
     api = new ClientApi(ModelProvider.GLM);
+  } else if (["grok"].includes(config.modelConfig.model)) {
+    api = new ClientApi(ModelProvider.Grok);
   } else {
     api = new ClientApi(ModelProvider.GLM);
   }

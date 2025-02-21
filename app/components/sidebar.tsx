@@ -157,7 +157,9 @@ export function SideBar(props: { className?: string }) {
         <div className={styles["sidebar-title"]} data-tauri-drag-region>
           HyperGPT
         </div>
-        <div className={styles["sidebar-sub-title"]}>您的工作和学习助手.</div>
+        <div className={styles["sidebar-sub-title"]}>
+          跨时代的Ai语言交互,已接入Grok3.
+        </div>
         <div className={styles["sidebar-logo"] + " no-dark"}>
           <ChatGptIcon />
         </div>

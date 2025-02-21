@@ -1,17 +1,12 @@
 import {
   ApiPath,
   DEFAULT_API_HOST,
-  DEFAULT_MODELS,
-  ChatGLM,
   Grok,
-  CHATGLM_BASE_URL,
-  GROK_BASE_URL,
   REQUEST_TIMEOUT_MS,
-  ServiceProvider,
 } from "@/app/constant";
-import { useAccessStore, useAppConfig, useChatStore } from "@/app/store";
+import { useAppConfig, useChatStore } from "@/app/store";
 
-import { ChatOptions, getHeaders, LLMApi, LLMModel, LLMUsage } from "../api";
+import { ChatOptions, LLMApi, LLMModel, LLMUsage } from "../api";
 import Locale from "../../locales";
 import {
   EventStreamContentType,
@@ -20,9 +15,8 @@ import {
 import { prettyObject } from "@/app/utils/format";
 import { getClientConfig } from "@/app/config/client";
 import { SignJWT } from "jose";
-import { getServerSideConfig } from "@/app/config/server";
 
-export interface ChatGLMListModelResponse {
+export interface ChatGrokListModelResponse {
   object: string;
   data: Array<{
     id: string;
@@ -55,7 +49,6 @@ export async function generateToken(
     timestamp: Math.round(Date.now() / 1000),
   };
 
-  // const secretJWK = await parseJwk({ kty: 'oct', k: secret, alg: 'HS256' }, 'HS256')
   const secretJWK = new TextEncoder().encode(secret);
 
   return new SignJWT(payload)
@@ -63,23 +56,19 @@ export async function generateToken(
     .sign(secretJWK);
 }
 
-export class ChatGLMApi implements LLMApi {
-  private disableListModels = true;
-
+export class ChatGrokApi implements LLMApi {
   path(path: string): string {
-    const accessStore = useAccessStore.getState();
-
-    let baseUrl = "/api/chatglm/";
+    let baseUrl = "/api/grok/";
 
     if (baseUrl.length === 0) {
       const isApp = !!getClientConfig()?.isApp;
-      baseUrl = isApp ? DEFAULT_API_HOST : ApiPath.ChatGLM;
+      baseUrl = isApp ? DEFAULT_API_HOST : ApiPath.Grok;
     }
 
     if (baseUrl.endsWith("/")) {
       baseUrl = baseUrl.slice(0, baseUrl.length - 1);
     }
-    if (!baseUrl.startsWith("http") && !baseUrl.startsWith(ApiPath.ChatGLM)) {
+    if (!baseUrl.startsWith("http") && !baseUrl.startsWith(ApiPath.Grok)) {
       baseUrl = "https://" + baseUrl;
     }
 
@@ -126,40 +115,30 @@ export class ChatGLMApi implements LLMApi {
       ...useAppConfig.getState().modelConfig,
       ...useChatStore.getState().currentSession().mask.modelConfig,
       ...{
-        model: options.config.model,
+        model: "grok-2-latest",
       },
     };
 
     const requestPayload = {
       messages: messages,
-      stream: options.config.stream,
-      model: modelConfig.model,
+      stream: true,
+      model: "grok-2-latest",
       temperature: modelConfig.temperature,
-      // presence_penalty: modelConfig.presence_penalty,
-      // frequency_penalty: modelConfig.frequency_penalty,
-      top_p: modelConfig.top_p === 1 ? 0.5 : modelConfig.top_p,
-      // max_tokens: Math.max(modelConfig.max_tokens, 1024),
-      // Please do not ask me why not send max_tokens, no reason, this param is just shit, I dont want to explain anymore.
     };
-
-    //console.log("[Request] chatglm payload: ", requestPayload);
 
     const shouldStream = !!options.config.stream;
     const controller = new AbortController();
     options.onController?.(controller);
     try {
-      const chatPath = this.path(ChatGLM.ChatPath);
-
+      const chatPath = this.path(Grok.ChatPath);
+      console.log("------------", process.env.NEXT_PUBLIC_GROK_KEY);
       const chatPayload = {
         method: "POST",
         body: JSON.stringify(requestPayload),
         signal: controller.signal,
         headers: {
           Accept: "application/json",
-          Authorization: await generateToken(
-            process.env.NEXT_PUBLIC_GLM_APP_KEY ?? "",
-            3600,
-          ),
+          Authorization: "Berer " + process.env.NEXT_PUBLIC_GROK_KEY,
           "Content-Type": "application/json",
           "x-requested-with": "XMLHttpRequest",
         },
@@ -212,10 +191,7 @@ export class ChatGLMApi implements LLMApi {
           async onopen(res) {
             clearTimeout(requestTimeoutId);
             const contentType = res.headers.get("content-type");
-            console.log(
-              "[ChatGLM] request response content type: ",
-              contentType,
-            );
+            console.log("[grok] request response content type: ", contentType);
 
             if (contentType?.startsWith("text/plain")) {
               responseText = await res.clone().text();
@@ -301,43 +277,16 @@ export class ChatGLMApi implements LLMApi {
 
   async models(): Promise<LLMModel[]> {
     return [
-      // {
-      //   name: "glm-4",
-      //   available: true,
-      //   provider: {
-      //     id: "chatglm",
-      //     providerName: "ChatGLM",
-      //     providerType: "chatglm",
-      //   },
-      // },
       {
-        name: "glm-4-plus",
+        name: "grok",
         available: true,
         provider: {
-          id: "chatglm",
-          providerName: "ChatGLM",
-          providerType: "chatglm",
+          id: "grok",
+          providerName: "Grok",
+          providerType: "grok",
         },
       },
-      {
-        name: "glm-4v-plus",
-        available: true,
-        provider: {
-          id: "chatglm",
-          providerName: "ChatGLM",
-          providerType: "chatglm",
-        },
-      },
-      // {
-      //   name: "chatglm_pro",
-      //   available: true,
-      //   provider: {
-      //     id: "chatglm",
-      //     providerName: "ChatGLM",
-      //     providerType: "chatglm",
-      //   },
-      // },
     ];
   }
 }
-export { ChatGLM };
+export { Grok };

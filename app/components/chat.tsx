@@ -35,7 +35,7 @@ import AutoIcon from "../icons/auto.svg";
 import BottomIcon from "../icons/bottom.svg";
 import StopIcon from "../icons/pause.svg";
 import RobotIcon from "../icons/robot.svg";
-import { Uploader } from 'react-vant';
+import { Uploader } from "react-vant";
 import {
   ChatMessage,
   SubmitKey,
@@ -442,14 +442,12 @@ export function ChatActions(props: {
     [allModels],
   );
   const [showModelSelector, setShowModelSelector] = useState(false);
-  const [tasks, setTasks] = React.useState([])
+  const [tasks, setTasks] = React.useState([]);
   const handleSetImg = (file: any) => {
-
     if (file && file[0] && file[0].file) {
       useCurrentFile.setState({ file: file[0].file });
     }
-
-  }
+  };
 
   useEffect(() => {
     // if current model is not available
@@ -512,19 +510,19 @@ export function ChatActions(props: {
         }
       />
 
-      <ChatAction
+      {/* <ChatAction
         onClick={props.showPromptHints}
         text={Locale.Chat.InputActions.Prompt}
         icon={<PromptIcon />}
-      />
+      /> */}
 
-      <ChatAction
+      {/* <ChatAction
         onClick={() => {
           navigate(Path.Masks);
         }}
         text={Locale.Chat.InputActions.Masks}
         icon={<RoleIcon />}
-      />
+      /> */}
 
       <ChatAction
         text={Locale.Chat.InputActions.Clear}
@@ -575,11 +573,15 @@ export function ChatActions(props: {
             marginRight: "6px",
           }}
         >
-          <Uploader value={tasks} accept='*' maxCount={imgMaxCount} onChange={(v: any) => {
-            setTasks(v);
-            handleSetImg(v);
-          }} />
-
+          <Uploader
+            value={tasks}
+            accept="*"
+            maxCount={imgMaxCount}
+            onChange={(v: any) => {
+              setTasks(v);
+              handleSetImg(v);
+            }}
+          />
         </div>
       )}
     </div>
@@ -661,6 +663,7 @@ function _Chat() {
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const [userInput, setUserInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [submitDisable, setSubmitDisable] = useState(false);
   const { submitKey, shouldSubmit } = useSubmitHandler();
   const { scrollRef, setAutoScroll, scrollDomToBottom } = useScrollToBottom();
   const [hitBottom, setHitBottom] = useState(true);
@@ -736,7 +739,7 @@ function _Chat() {
   const doSubmit = async (userInput: string) => {
     if (userInput.trim() === "") return;
     const matchCommand = chatCommands.match(userInput);
-    const currentFile = useCurrentFile.getState().file ?? { name: '' };
+    const currentFile = useCurrentFile.getState().file ?? { name: "" };
 
     if (currentFile.name.length > 0) {
       await uploadFile(currentFile);
@@ -942,27 +945,27 @@ function _Chat() {
       .concat(
         isLoading
           ? [
-            {
-              ...createMessage({
-                role: "assistant",
-                content: "……",
-              }),
-              preview: true,
-            },
-          ]
+              {
+                ...createMessage({
+                  role: "assistant",
+                  content: "……",
+                }),
+                preview: true,
+              },
+            ]
           : [],
       )
       .concat(
         userInput.length > 0 && config.sendPreviewBubble
           ? [
-            {
-              ...createMessage({
-                role: "user",
-                content: userInput,
-              }),
-              preview: true,
-            },
-          ]
+              {
+                ...createMessage({
+                  role: "user",
+                  content: userInput,
+                }),
+                preview: true,
+              },
+            ]
           : [],
       );
   }, [
@@ -1058,7 +1061,7 @@ function _Chat() {
         if (payload.key || payload.url) {
           showConfirm(
             Locale.URLCommand.Settings +
-            `\n${JSON.stringify(payload, null, 4)}`,
+              `\n${JSON.stringify(payload, null, 4)}`,
           ).then((res) => {
             if (!res) return;
             if (payload.key) {

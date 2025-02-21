@@ -274,24 +274,27 @@ export const useChatStore = createPersistStore(
         const modelConfig = session.mask.modelConfig;
 
         const userContent = fillTemplateWith(content, modelConfig);
-        console.log("[User Input] after template: ", userContent, img, modelConfig.model);
+        console.log(
+          "[User Input] after template: ",
+          userContent,
+          img,
+          modelConfig.model,
+        );
 
-        const userMessage: ChatMessage = img ?
-          createMessage({
-            role: "user",
-            content: userContent,
-            img: img
-          })
+        const userMessage: ChatMessage = img
+          ? createMessage({
+              role: "user",
+              content: userContent,
+              img: img,
+            })
           : createMessage({
-            role: "user",
-            content: userContent,
-          })
-          ;
-
+              role: "user",
+              content: userContent,
+            });
         const botMessage: ChatMessage = createMessage({
           role: "assistant",
           streaming: true,
-          model: img ? 'glm-4v-plus' : modelConfig.model,
+          model: img ? "glm-4v-plus" : modelConfig.model,
         });
 
         // get recent messages
@@ -315,10 +318,10 @@ export const useChatStore = createPersistStore(
         var api: ClientApi;
         if (modelConfig.model === "gemini-pro") {
           api = new ClientApi(ModelProvider.GeminiPro);
-        } else if (
-          ["glm-4-plus", "glm-4v-plus"].includes(modelConfig.model)
-        ) {
+        } else if (["glm-4-plus", "glm-4v-plus"].includes(modelConfig.model)) {
           api = new ClientApi(ModelProvider.GLM);
+        } else if (["grok"].includes(modelConfig.model)) {
+          api = new ClientApi(ModelProvider.Grok);
         } else {
           api = new ClientApi(ModelProvider.GPT);
         }
@@ -406,14 +409,14 @@ export const useChatStore = createPersistStore(
         var systemPrompts: ChatMessage[] = [];
         systemPrompts = shouldInjectSystemPrompts
           ? [
-            createMessage({
-              role: "system",
-              content: fillTemplateWith("", {
-                ...modelConfig,
-                template: DEFAULT_SYSTEM_TEMPLATE,
+              createMessage({
+                role: "system",
+                content: fillTemplateWith("", {
+                  ...modelConfig,
+                  template: DEFAULT_SYSTEM_TEMPLATE,
+                }),
               }),
-            }),
-          ]
+            ]
           : [];
         if (shouldInjectSystemPrompts) {
           console.log(
@@ -502,9 +505,13 @@ export const useChatStore = createPersistStore(
         if (modelConfig.model === "gemini-pro") {
           api = new ClientApi(ModelProvider.GeminiPro);
         } else if (
-          ["glm-4", "glm-4-plus", "glm-4v-plus", "chatglm_pro"].includes(modelConfig.model)
+          ["glm-4", "glm-4-plus", "glm-4v-plus", "chatglm_pro"].includes(
+            modelConfig.model,
+          )
         ) {
           api = new ClientApi(ModelProvider.GLM);
+        } else if (["grok"].includes(modelConfig.model)) {
+          api = new ClientApi(ModelProvider.Grok);
         } else {
           api = new ClientApi(ModelProvider.GPT);
         }
@@ -533,8 +540,8 @@ export const useChatStore = createPersistStore(
             onFinish(message) {
               get().updateCurrentSession(
                 (session) =>
-                (session.topic =
-                  message.length > 0 ? trimTopic(message) : DEFAULT_TOPIC),
+                  (session.topic =
+                    message.length > 0 ? trimTopic(message) : DEFAULT_TOPIC),
               );
             },
           });
