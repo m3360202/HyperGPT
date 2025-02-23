@@ -69,7 +69,7 @@ export const getServerSideConfig = () => {
 
   const disableGPT4 = !!process.env.DISABLE_GPT4;
   let customModels =
-    process.env.CUSTOM_MODELS ?? "-all,+grok,+glm-4-plus,+glm-4v-plus";
+    process.env.CUSTOM_MODELS ?? "-all,+deepseek,+glm-4-plus,+glm-4v-plus";
 
   if (disableGPT4) {
     if (customModels) customModels += ",";
@@ -119,6 +119,8 @@ export const getServerSideConfig = () => {
     glmAppKey: process.env.NEXT_PUBLIC_GLM_APP_KEY,
 
     grokAppKey: process.env.NEXT_PUBLIC_GROK_KEY,
+
+    deepSeekAppKey: process.env.NEXT_PUBLIC_DEEPSEEK_KEY,
 
     ossAppId: process.env.NEXT_PUBLIC_OSS_APP_ID,
     ossAppSecret: process.env.NEXT_PUBLIC_OSS_APP_SECRET,

@@ -9,6 +9,7 @@ import { ChatMessage, ModelType, useAccessStore, useChatStore } from "../store";
 import { ChatGPTApi } from "./platforms/openai";
 import { GeminiProApi } from "./platforms/google";
 import { ChatGLMApi } from "./platforms/chatglm";
+import { DeepSeekApi } from "./platforms/deepseek";
 import { ChatGrokApi } from "./platforms/grok";
 export const ROLES = ["system", "user", "assistant"] as const;
 export type MessageRole = (typeof ROLES)[number];
@@ -97,6 +98,12 @@ export class ClientApi {
       return;
     }
 
+    if (provider === ModelProvider.DeepSeek) {
+      console.log("[use DeepSeek]");
+      this.llm = new DeepSeekApi();
+      return;
+    }
+
     if (provider === ModelProvider.GLM) {
       console.log("[use GLM]");
       this.llm = new ChatGLMApi();
@@ -162,7 +169,7 @@ export function getHeaders() {
     Accept: "application/json",
   };
   const modelConfig = useChatStore.getState().currentSession().mask.modelConfig;
-  const isChatGLM = ["glm-4-plus", "glm-4v-plus", "chatglm_pro"].includes(
+  const isChatGLM = ["glm-4-plus", "glm-4v-plus", "deepseek"].includes(
     modelConfig.model,
   );
   const isGrok = modelConfig.model === "grok";

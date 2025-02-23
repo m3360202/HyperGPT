@@ -555,7 +555,7 @@ export function ChatActions(props: {
         }
       />
 
-      {(modelConfig.model === "glm-4v-plus" || modelConfig.model === "deepseekR1") && (
+      {(modelConfig.model === "glm-4v-plus" || modelConfig.model === "deepseek") && (
         <div
         style={{
           display: "flex",

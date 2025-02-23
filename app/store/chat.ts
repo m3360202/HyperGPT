@@ -294,7 +294,7 @@ export const useChatStore = createPersistStore(
         const botMessage: ChatMessage = createMessage({
           role: "assistant",
           streaming: true,
-          model: img ? "glm-4v-plus" : modelConfig.model,
+          model: img ? "deepseek" : modelConfig.model,
         });
 
         // get recent messages
@@ -320,6 +320,10 @@ export const useChatStore = createPersistStore(
           api = new ClientApi(ModelProvider.GeminiPro);
         } else if (["glm-4-plus", "glm-4v-plus"].includes(modelConfig.model)) {
           api = new ClientApi(ModelProvider.GLM);
+        } else if (
+          modelConfig.model === "deepseek"
+        ) {
+          api = new ClientApi(ModelProvider.DeepSeek);
         } else if (["grok"].includes(modelConfig.model)) {
           api = new ClientApi(ModelProvider.Grok);
         } else {
@@ -505,12 +509,16 @@ export const useChatStore = createPersistStore(
         if (modelConfig.model === "gemini-pro") {
           api = new ClientApi(ModelProvider.GeminiPro);
         } else if (
-          ["glm-4", "glm-4-plus", "glm-4v-plus", "chatglm_pro"].includes(
+          ["glm-4", "glm-4-plus", "glm-4v-plus"].includes(
             modelConfig.model,
           )
         ) {
           api = new ClientApi(ModelProvider.GLM);
-        } else if (["grok"].includes(modelConfig.model)) {
+        } else if ( modelConfig.model === "deepseek")
+        {
+          api = new ClientApi(ModelProvider.DeepSeek);
+        }
+        else if (["grok"].includes(modelConfig.model)) {
           api = new ClientApi(ModelProvider.Grok);
         } else {
           api = new ClientApi(ModelProvider.GPT);

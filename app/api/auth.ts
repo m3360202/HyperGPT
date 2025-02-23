@@ -123,6 +123,21 @@ export async function chatglmAuth(
   };
 }
 
+export async function deepseekAuth(req: NextRequest, modelProvider: ModelProvider) {
+  console.log(
+    "[Auth] got deepseek token: ",
+    "Bearer " + process.env.NEXT_PUBLIC_DEEPSEEK_KEY,
+  );
+  req.headers.set(
+    "Authorization",
+    "Bearer " + process.env.NEXT_PUBLIC_DEEPSEEK_KEY,
+  );
+
+  return {
+    error: false,
+  };
+}
+
 export async function grokAuth(req: NextRequest, modelProvider: ModelProvider) {
   console.log(
     "[Auth] got grokAuth token: ",

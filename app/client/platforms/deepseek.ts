@@ -1,13 +1,10 @@
 import {
   ApiPath,
   DEFAULT_API_HOST,
-  DEFAULT_MODELS,
-  ChatGLM,
-  CHATGLM_BASE_URL,
-  REQUEST_TIMEOUT_MS,
-  ServiceProvider,
+  DeepSeek,
+  REQUEST_TIMEOUT_MS
 } from "@/app/constant";
-import { useAccessStore, useAppConfig, useChatSettings, useChatStore } from "@/app/store";
+import { useAppConfig, useChatSettings, useChatStore } from "@/app/store";
 
 import { ChatOptions, LLMApi, LLMModel, LLMUsage } from "../api";
 import Locale from "../../locales";
@@ -60,12 +57,12 @@ export async function generateToken(
     .sign(secretJWK);
 }
 
-export class ChatGLMApi implements LLMApi {
+export class DeepSeekApi implements LLMApi {
   private disableListModels = true;
 
   path(path: string): string {
 
-    let baseUrl = "/api/chatglm/";
+    let baseUrl = "/api/deepseek/";
 
     if (baseUrl.length === 0) {
       const isApp = !!getClientConfig()?.isApp;
@@ -83,7 +80,12 @@ export class ChatGLMApi implements LLMApi {
   }
 
   extractMessage(res: any) {
-    return res.choices?.at(0)?.message?.content ?? "";
+    if(res.choices?.at(0)?.message?.content || res.choices?.at(0)?.message?.reasoning_content){
+      return res.choices?.at(0)?.message?.content || res.choices?.at(0)?.message?.reasoning_content;
+    }
+    else {
+      return "";
+    }
   }
 
   getMessagesContext(messages: any[]) {
@@ -127,7 +129,7 @@ export class ChatGLMApi implements LLMApi {
     };
     const getModel = (model: string, reasoner: boolean) => {
       if(model === 'deepseek' && reasoner){
-        return 'deepseek';
+        return 'deepseek-reasoner';
       }
       else if(model === 'deepseek' && !reasoner){
         return 'deepseek-chat';
@@ -155,19 +157,15 @@ export class ChatGLMApi implements LLMApi {
     const controller = new AbortController();
     options.onController?.(controller);
     try {
-      const chatPath = this.path(ChatGLM.ChatPath);
-      const Token = modelConfig.model === 'deepseek' ? 'Berer ' + process.env.NEXT_PUBLIC_DEEPSEEK_KEY : 
-      await generateToken(
-        process.env.NEXT_PUBLIC_GLM_APP_KEY ?? "",
-        3600,
-      )
+      const chatPath = "https://api.deepseek.com/chat/completions";
+      const Token = process.env.NEXT_PUBLIC_DEEPSEEK_KEY;
       const chatPayload = {
         method: "POST",
         body: JSON.stringify(requestPayload),
         signal: controller.signal,
         headers: {
           Accept: "application/json",
-          Authorization: Token,
+          Authorization: 'Bearer ' + Token,
           "Content-Type": "application/json",
           "x-requested-with": "XMLHttpRequest",
         },
@@ -214,7 +212,8 @@ export class ChatGLMApi implements LLMApi {
         };
 
         controller.signal.onabort = finish;
-        console.log('chatPath------',chatPath)
+        console.log('chatPath------',chatPath, chatPayload)
+        //@ts-ignore
         fetchEventSource(chatPath, {
           ...chatPayload,
           async onopen(res) {
@@ -266,11 +265,12 @@ export class ChatGLMApi implements LLMApi {
               const json = JSON.parse(text) as {
                 choices: Array<{
                   delta: {
+                    reasoning_content: string;
                     content: string;
                   };
                 }>;
               };
-              const delta = json.choices[0]?.delta?.content;
+              const delta = json.choices[0]?.delta?.content || json.choices[0]?.delta?.reasoning_content;
               if (delta) {
                 remainText += delta;
               }
@@ -310,24 +310,15 @@ export class ChatGLMApi implements LLMApi {
   async models(): Promise<LLMModel[]> {
     return [
       {
-        name: "glm-4-plus",
+        name: "deepseek",
         available: true,
         provider: {
-          id: "chatglm",
-          providerName: "ChatGLM",
-          providerType: "chatglm",
+          id: "deepseek",
+          providerName: "DeepSeek",
+          providerType: "deepseek",
         },
       },
-      {
-        name: "glm-4v-plus",
-        available: true,
-        provider: {
-          id: "chatglm",
-          providerName: "ChatGLM",
-          providerType: "chatglm",
-        },
-      }
     ];
   }
 }
-export { ChatGLM };
+export { DeepSeek };

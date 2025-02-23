@@ -1,4 +1,4 @@
-export const OWNER = "kiddyuchina";
+export const OWNER = "m3360202";
 export const REPO = "HyperGPT";
 export const REPO_URL = `https://github.com/${OWNER}/${REPO}`;
 export const ISSUE_URL = `https://github.com/${OWNER}/${REPO}/issues`;
@@ -15,7 +15,7 @@ export const OPENAI_BASE_URL = "https://api.openai.com";
 export const GEMINI_BASE_URL = "https://generativelanguage.googleapis.com/";
 
 export const CHATGLM_BASE_URL = "https://open.bigmodel.cn/api/paas/";
-
+export const DEEPSEEK_BASE_URL = "https://open.bigmodel.cn/api/paas/";
 export const GROK_BASE_URL = "https://api.x.ai/";
 
 export enum Path {
@@ -34,6 +34,7 @@ export enum ApiPath {
   OpenAI = "/api/openai",
   ChatGLM = "/api/chatglm",
   Grok = "/api/grok",
+  DeepSeek = "/api/deepseek"
 }
 
 export enum SlotID {
@@ -78,6 +79,7 @@ export enum ServiceProvider {
   Google = "Google",
   ChatGLM = "ChatGLM",
   Grok = "Grok",
+  DeepSeek = "DeepSeek"
 }
 
 export enum ModelProvider {
@@ -85,6 +87,7 @@ export enum ModelProvider {
   GeminiPro = "GeminiPro",
   GLM = "GLM",
   Grok = "Grok",
+  DeepSeek = "DeepSeek"
 }
 
 export const OpenaiPath = {
@@ -108,6 +111,11 @@ export const Google = {
 export const ChatGLM = {
   ExampleEndpoint: "https://open.bigmodel.cn/api/paas",
   ChatPath: "v4/chat/completions",
+};
+
+export const DeepSeek = {
+  ExampleEndpoint: "https://api.deepseek.com",
+  ChatPath: "chat/completions",
 };
 
 export const Grok = {
@@ -269,15 +277,6 @@ export const DEFAULT_MODELS = [
       providerType: "google",
     },
   },
-  // {
-  //   name: "glm-4",
-  //   available: true,
-  //   provider: {
-  //     id: "chatglm",
-  //     providerName: "ChatGLM",
-  //     providerType: "chatglm",
-  //   },
-  // },
   {
     name: "glm-4-plus",
     available: true,
@@ -306,23 +305,14 @@ export const DEFAULT_MODELS = [
     },
   },
   {
-    name: "deepseekR1",
+    name: "deepseek",
     available: true,
     provider: {
-      id: "deepseekR1",
-      providerName: "DeepSeekR1",
-      providerType: "deepseekR1",
-    },
-  },
-  // {
-  //   name: "glm_pro",
-  //   available: true,
-  //   provider: {
-  //     id: "chatglm",
-  //     providerName: "ChatGLM",
-  //     providerType: "chatglm",
-  //   },
-  // },
+      id: "deepseek",
+      providerName: "DeepSeek",
+      providerType: "deepseek",
+    }
+  }
 ] as const;
 
 export const CHAT_PAGE_SIZE = 15;

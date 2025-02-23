@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { chatglmAuth } from "../../auth";
+import { deepseekAuth } from "../../auth";
 import { prettyObject } from "@/app/utils/format";
-import { ChatGLM, ModelProvider,  } from "@/app/constant";
+import { ModelProvider, DeepSeek } from "@/app/constant";
 
-import { requestChatGLM } from "../../common";
+import { requestDeepSeek } from "../../common";
 
-const ALLOWD_PATH = new Set(Object.values(ChatGLM));
+const ALLOWD_PATH = new Set(Object.values(DeepSeek));
 
 async function handle(
   req: NextRequest,
@@ -18,7 +18,7 @@ async function handle(
   const subpath = params.path.join("/");
 
   if (!ALLOWD_PATH.has(subpath)) {
-    console.log("[ChatGLM Route] forbidden path ", subpath);
+    console.log("[deepseek Route] forbidden path ", subpath);
     return NextResponse.json(
       {
         error: true,
@@ -30,7 +30,7 @@ async function handle(
     );
   }
   // 防抖函数
-  const authResult = await chatglmAuth(req, ModelProvider.GPT);
+  const authResult = await deepseekAuth(req, ModelProvider.GPT);
   if (authResult.error) {
     return NextResponse.json(authResult, {
       status: 401,
@@ -38,11 +38,11 @@ async function handle(
   }
 
   try {
-    const response = await requestChatGLM(req);
+    const response = await requestDeepSeek(req);
 
     return response;
   } catch (e) {
-    console.error("[ChatGLM] ", e);
+    console.error("[deepseek] ", e);
     return NextResponse.json(prettyObject(e));
   }
 }

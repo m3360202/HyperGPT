@@ -208,6 +208,10 @@ export function useLoadData() {
     api = new ClientApi(ModelProvider.GeminiPro);
   } else if (["glm-4-plus", "glm-4v-plus"].includes(config.modelConfig.model)) {
     api = new ClientApi(ModelProvider.GLM);
+  } else if (
+    config.modelConfig.model === "deepseek"
+  ) {
+    api = new ClientApi(ModelProvider.DeepSeek);
   } else if (["grok"].includes(config.modelConfig.model)) {
     api = new ClientApi(ModelProvider.Grok);
   } else {
