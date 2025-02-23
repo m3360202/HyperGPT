@@ -144,10 +144,10 @@ export function NewChat() {
         </div>
       </div>
 
-      <div className={styles["title"]}>{Locale.NewChat.Title}</div>
+      <div className={styles["title"]} style={{textAlign: 'center'}}>{Locale.NewChat.Title}</div>
       <div className={styles["sub-title"]}>{Locale.NewChat.SubTitle}</div>
       
-      <div style={{ display: 'flex', alignItems: 'start', justifyContent: 'start', flexDirection: 'column', gap: '10px', marginTop: '20px'}}>
+      <div style={{ display: 'flex', alignItems: 'start', justifyContent: 'start', flexDirection: 'column', gap: '10px', marginTop: '20px', padding: '0 10px'}}>
         <div className={styles["sub-title"]}>最新迭代功能：</div>
         <div style={{ color: '#637381', fontSize: '14px' }}>1.接入Deepseek R1 模型</div>
         <div style={{ color: '#637381', fontSize: '14px' }}>2.深度思索功能和Reasoner功能现在对全部用户开放</div>

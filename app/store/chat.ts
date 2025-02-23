@@ -266,7 +266,7 @@ export const useChatStore = createPersistStore(
           session.lastUpdate = Date.now();
         });
         get().updateStat(message);
-        get().summarizeSession();
+        // get().summarizeSession();
       },
 
       async onUserInput(content: string, img: string | null = null) {
@@ -588,13 +588,7 @@ export const useChatStore = createPersistStore(
           modelConfig.sendMemory
         ) {
           api.llm.chat({
-            messages: toBeSummarizedMsgs.concat(
-              createMessage({
-                role: "system",
-                content: Locale.Store.Prompt.Summarize,
-                date: "",
-              }),
-            ),
+            messages: toBeSummarizedMsgs,
             config: {
               ...modelConfig,
               stream: true,

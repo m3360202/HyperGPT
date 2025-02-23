@@ -81,7 +81,7 @@ export class DeepSeekApi implements LLMApi {
 
   extractMessage(res: any) {
     if(res.choices?.at(0)?.message?.content || res.choices?.at(0)?.message?.reasoning_content){
-      return res.choices?.at(0)?.message?.content || res.choices?.at(0)?.message?.reasoning_content;
+      return res.choices?.at(0)?.message?.content || `<span style={{ fontSize: '12px', color: '#637381';}}>${res.choices?.at(0)?.message?.reasoning_content}</span>`;
     }
     else {
       return "";
@@ -118,6 +118,7 @@ export class DeepSeekApi implements LLMApi {
   }
 
   async chat(options: ChatOptions) {
+    console.log('aaaaaa',options.messages)
     let messages = this.getMessagesContext(options.messages);
     const useReasoner = useChatSettings.getState().useReasoner;
     const modelConfig = {
