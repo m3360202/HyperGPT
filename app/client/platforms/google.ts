@@ -134,6 +134,7 @@ export class GeminiProApi implements LLMApi {
 
         // start animaion
         animateResponseText();
+        // @ts-ignore
         fetch(streamChatPath, chatPayload)
           .then((response) => {
             const reader = response?.body?.getReader();
@@ -185,6 +186,7 @@ export class GeminiProApi implements LLMApi {
             console.error("Error:", error);
           });
       } else {
+        // @ts-ignore
         const res = await fetch(chatPath, chatPayload);
         clearTimeout(requestTimeoutId);
 

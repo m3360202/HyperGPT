@@ -148,7 +148,7 @@ export class ChatGPTApi implements LLMApi {
         };
 
         controller.signal.onabort = finish;
-
+        // @ts-ignore
         fetchEventSource(chatPath, {
           ...chatPayload,
           async onopen(res) {
@@ -222,6 +222,7 @@ export class ChatGPTApi implements LLMApi {
           openWhenHidden: true,
         });
       } else {
+        // @ts-ignore
         const res = await fetch(chatPath, chatPayload);
         clearTimeout(requestTimeoutId);
 
@@ -245,7 +246,7 @@ export class ChatGPTApi implements LLMApi {
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
     const startDate = formatDate(startOfMonth);
     const endDate = formatDate(new Date(Date.now() + ONE_DAY));
-
+    // @ts-ignore
     const [used, subs] = await Promise.all([
       fetch(
         this.path(
@@ -253,11 +254,13 @@ export class ChatGPTApi implements LLMApi {
         ),
         {
           method: "GET",
+          // @ts-ignore
           headers: getHeaders(),
         },
       ),
       fetch(this.path(OpenaiPath.SubsPath), {
         method: "GET",
+        // @ts-ignore
         headers: getHeaders(),
       }),
     ]);
@@ -308,6 +311,7 @@ export class ChatGPTApi implements LLMApi {
     const res = await fetch(this.path(OpenaiPath.ListModelPath), {
       method: "GET",
       headers: {
+        // @ts-ignore
         ...getHeaders(),
       },
     });
