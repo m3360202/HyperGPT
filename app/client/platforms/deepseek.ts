@@ -2,7 +2,7 @@ import {
   ApiPath,
   DEFAULT_API_HOST,
   DeepSeek,
-  REQUEST_TIMEOUT_MS
+  REQUEST_TIMEOUT_MS,
 } from "@/app/constant";
 import { useAppConfig, useChatSettings, useChatStore } from "@/app/store";
 
@@ -61,7 +61,6 @@ export class DeepSeekApi implements LLMApi {
   private disableListModels = true;
 
   path(path: string): string {
-
     let baseUrl = "/api/deepseek/";
 
     if (baseUrl.length === 0) {
@@ -80,12 +79,21 @@ export class DeepSeekApi implements LLMApi {
   }
 
   extractMessage(res: any) {
-    if(res.choices?.at(0)?.message?.content || res.choices?.at(0)?.message?.reasoning_content){
-      return res.choices?.at(0)?.message?.content || `<span style={{ fontSize: '12px', color: '#637381';}}>${res.choices?.at(0)?.message?.reasoning_content}</span>`;
-    }
-    else {
+    const choice = res.choices?.at(0);
+    if (!choice) {
       return "";
     }
+
+    const content = choice.message?.content || "";
+    const reasoningContent = choice.message?.reasoning_content || "";
+
+    // 如果有推理内容，使用 Markdown 格式显示
+    if (reasoningContent) {
+      const reasoningMarkdown = `> *🤔 深度思考中...*\n> \n> ${reasoningContent.replace(/\n/g, "\n> ")}\n\n`;
+      return reasoningMarkdown + content;
+    }
+
+    return content;
   }
 
   getMessagesContext(messages: any[]) {
@@ -118,7 +126,6 @@ export class DeepSeekApi implements LLMApi {
   }
 
   async chat(options: ChatOptions) {
-    console.log('aaaaaa',options.messages)
     let messages = this.getMessagesContext(options.messages);
     const useReasoner = useChatSettings.getState().useReasoner;
     const modelConfig = {
@@ -129,16 +136,14 @@ export class DeepSeekApi implements LLMApi {
       },
     };
     const getModel = (model: string, reasoner: boolean) => {
-      if(model === 'deepseek' && reasoner){
-        return 'deepseek-reasoner';
-      }
-      else if(model === 'deepseek' && !reasoner){
-        return 'deepseek-chat';
-      }
-      else {
+      if (model === "deepseek" && reasoner) {
+        return "deepseek-reasoner";
+      } else if (model === "deepseek" && !reasoner) {
+        return "deepseek-chat";
+      } else {
         return model;
       }
-    }
+    };
 
     const requestPayload = {
       messages: messages,
@@ -166,7 +171,7 @@ export class DeepSeekApi implements LLMApi {
         signal: controller.signal,
         headers: {
           Accept: "application/json",
-          Authorization: 'Bearer ' + Token,
+          Authorization: "Bearer " + Token,
           "Content-Type": "application/json",
           "x-requested-with": "XMLHttpRequest",
         },
@@ -182,6 +187,8 @@ export class DeepSeekApi implements LLMApi {
         let responseText = "";
         let remainText = "";
         let finished = false;
+        let reasoningStarted = false; // 跟踪推理内容是否已经开始
+        let reasoningEnded = false; // 跟踪推理内容是否已经结束
 
         // animate response to make it looks smooth
         function animateResponseText() {
@@ -207,13 +214,17 @@ export class DeepSeekApi implements LLMApi {
 
         const finish = () => {
           if (!finished) {
+            // 如果推理内容开始了但没有结束，需要添加结束标记
+            if (reasoningStarted && !reasoningEnded) {
+              remainText += "\n\n";
+            }
             finished = true;
             options.onFinish(responseText + remainText);
           }
         };
 
         controller.signal.onabort = finish;
-        console.log('chatPath------',chatPath, chatPayload)
+        console.log("chatPath------", chatPath, chatPayload);
         //@ts-ignore
         fetchEventSource(chatPath, {
           ...chatPayload,
@@ -271,9 +282,28 @@ export class DeepSeekApi implements LLMApi {
                   };
                 }>;
               };
-              const delta = json.choices[0]?.delta?.content || json.choices[0]?.delta?.reasoning_content;
+
+              const delta = json.choices[0]?.delta;
               if (delta) {
-                remainText += delta;
+                // 处理推理内容
+                if (delta.reasoning_content) {
+                  // 如果是第一次收到推理内容，添加 Markdown 推理过程的开始标记
+                  if (!reasoningStarted) {
+                    remainText += `> *🤔 深度思考中...*\n> \n> `;
+                    reasoningStarted = true;
+                  }
+                  remainText += delta.reasoning_content.replace(/\n/g, "\n> ");
+                }
+
+                // 处理主要内容
+                if (delta.content) {
+                  // 如果之前有推理内容但还没有结束，先添加结束标记
+                  if (reasoningStarted && !reasoningEnded) {
+                    remainText += "\n\n";
+                    reasoningEnded = true;
+                  }
+                  remainText += delta.content;
+                }
               }
             } catch (e) {
               console.error("[Request] parse error", text);

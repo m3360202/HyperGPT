@@ -95,6 +95,7 @@ export const useAccessStore = createPersistStore(
         method: "post",
         body: null,
         headers: {
+          // @ts-ignore
           ...getHeaders(),
         },
       })

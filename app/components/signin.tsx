@@ -121,7 +121,7 @@ export function SignIn() {
         <footer className="footer">
           <div className="container">
             <div className="footer">
-              Powered by Kiddyu JustGoodLuck @
+              Powered by JustGoodLuck @
               <a
                 type="primary"
                 href="https://github.com/m3360202/"
