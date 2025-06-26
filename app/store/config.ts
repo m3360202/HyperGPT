@@ -46,7 +46,7 @@ export const DEFAULT_CONFIG = {
   models: DEFAULT_MODELS as any as LLMModel[],
 
   modelConfig: {
-    model: "gpt-3.5-turbo" as ModelType,
+    model: "deepseek" as ModelType,
     temperature: 0.5,
     top_p: 0.5,
     max_tokens: 4000,
