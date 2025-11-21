@@ -473,6 +473,40 @@ const en: LocaleType = {
     Code: "Detected access code from url, confirm to apply? ",
     Settings: "Detected settings from url, confirm to apply?",
   },
+
+  Realtime: {
+    Title: "GLM-Realtime Voice Chat",
+    Status: {
+      Disconnected: "Disconnected",
+      Connecting: "Connecting...",
+      Connected: "Connected",
+      Error: "Connection Error",
+      Failed: "Connection Failed",
+    },
+    Actions: {
+      Connect: "Connect",
+      Disconnect: "Disconnect",
+      StartTalking: "Start Talking",
+      StopTalking: "Stop Talking",
+      EnableVideo: "Enable Video",
+      DisableVideo: "Disable Video",
+    },
+    Messages: {
+      ConnectSuccess: "WebSocket connected successfully",
+      ConnectFailed: "Connection failed",
+      ConnectError: "WebSocket connection error",
+      StartRecording: "Recording started",
+      StopRecording: "Recording stopped",
+      MicrophoneError: "Cannot access microphone",
+      ServerError: "Server error",
+    },
+    UI: {
+      TranscriptTitle: "Conversation Transcript",
+      UserPrefix: "User: ",
+      StatusLabel: "Status: ",
+      ReturnHome: "Return",
+    },
+  },
 };
 
 export default en;

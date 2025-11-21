@@ -466,6 +466,39 @@ const cn = {
     Topic: "主题",
     Time: "时间",
   },
+  Realtime: {
+    Title: "GLM-Realtime 实时通话",
+    Status: {
+      Disconnected: "未连接",
+      Connecting: "正在连接...",
+      Connected: "已连接",
+      Error: "连接错误",
+      Failed: "连接失败",
+    },
+    Actions: {
+      Connect: "连接",
+      Disconnect: "断开连接",
+      StartTalking: "开始说话",
+      StopTalking: "停止说话",
+      EnableVideo: "开启视频",
+      DisableVideo: "关闭视频",
+    },
+    Messages: {
+      ConnectSuccess: "WebSocket 连接成功",
+      ConnectFailed: "连接失败",
+      ConnectError: "WebSocket 连接错误",
+      StartRecording: "开始录音",
+      StopRecording: "录音已停止",
+      MicrophoneError: "无法访问麦克风",
+      ServerError: "服务器错误",
+    },
+    UI: {
+      TranscriptTitle: "对话记录",
+      UserPrefix: "用户: ",
+      StatusLabel: "状态: ",
+      ReturnHome: "返回",
+    },
+  },
 };
 
 type DeepPartial<T> = T extends object
