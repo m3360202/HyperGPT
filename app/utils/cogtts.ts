@@ -71,57 +71,65 @@ export function useCogTTS(): CogTTSHook {
         audioContextRef.current = ctx;
         nextStartTimeRef.current = ctx.currentTime;
 
-        const response = await fetch("/api/cogtts", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ text }),
-          signal,
-        });
+        // Split long text into chunks to avoid 400 error (max ~1000 chars per request)
+        const maxChunkSize = 1000;
+        const chunks = splitTextIntoChunks(text, maxChunkSize);
 
-        if (!response.ok) {
-          throw new Error(`TTS API Error: ${response.status}`);
-        }
+        for (const chunk of chunks) {
+          if (signal.aborted) break;
 
-        if (!response.body) return;
+          const response = await fetch("/api/cogtts", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ text: chunk }),
+            signal,
+          });
 
-        const reader = response.body.getReader();
-        const decoder = new TextDecoder();
-        let buffer = "";
+          if (!response.ok) {
+            throw new Error(`TTS API Error: ${response.status}`);
+          }
 
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done || signal.aborted) break;
+          if (!response.body) continue;
 
-          const chunk = decoder.decode(value, { stream: true });
-          buffer += chunk;
+          const reader = response.body.getReader();
+          const decoder = new TextDecoder();
+          let buffer = "";
 
-          // Process lines
-          const lines = buffer.split("\n");
-          buffer = lines.pop() || ""; // Keep incomplete line
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done || signal.aborted) break;
 
-          for (const line of lines) {
-            if (line.startsWith("data: ")) {
-              try {
-                const jsonStr = line.slice(6);
-                // Skip [DONE] or empty
-                if (jsonStr.trim() === "[DONE]") continue;
+            const streamChunk = decoder.decode(value, { stream: true });
+            buffer += streamChunk;
 
-                const data = JSON.parse(jsonStr);
-                if (
-                  data.choices &&
-                  data.choices[0] &&
-                  data.choices[0].delta &&
-                  data.choices[0].delta.content
-                ) {
-                  const audioContent = data.choices[0].delta.content;
-                  const sampleRate =
-                    data.choices[0].delta.return_sample_rate || 24000;
-                  scheduleAudioChunk(ctx, audioContent, sampleRate);
+            // Process lines
+            const lines = buffer.split("\n");
+            buffer = lines.pop() || ""; // Keep incomplete line
+
+            for (const line of lines) {
+              if (line.startsWith("data: ")) {
+                try {
+                  const jsonStr = line.slice(6);
+                  // Skip [DONE] or empty
+                  if (jsonStr.trim() === "[DONE]") continue;
+
+                  const data = JSON.parse(jsonStr);
+                  if (
+                    data.choices &&
+                    data.choices[0] &&
+                    data.choices[0].delta &&
+                    data.choices[0].delta.content
+                  ) {
+                    const audioContent = data.choices[0].delta.content;
+                    const sampleRate =
+                      data.choices[0].delta.return_sample_rate || 24000;
+                    scheduleAudioChunk(ctx, audioContent, sampleRate);
+                  }
+                } catch (e) {
+                  console.warn("Failed to parse TTS data chunk", e);
                 }
-              } catch (e) {
-                console.warn("Failed to parse TTS data chunk", e);
               }
             }
           }
@@ -271,4 +279,29 @@ export function useCogTTS(): CogTTSHook {
     play,
     stop,
   };
+}
+
+// Helper function to split text into chunks at sentence boundaries
+function splitTextIntoChunks(text: string, maxSize: number): string[] {
+  if (text.length <= maxSize) return [text];
+
+  const chunks: string[] = [];
+  let currentChunk = "";
+
+  // Split by sentence endings to keep natural pauses
+  const sentences = text.split(/([.!?。？！\n]+)/);
+
+  for (let i = 0; i < sentences.length; i++) {
+    const part = sentences[i];
+    if (currentChunk.length + part.length <= maxSize) {
+      currentChunk += part;
+    } else {
+      if (currentChunk) chunks.push(currentChunk);
+      currentChunk = part;
+    }
+  }
+
+  if (currentChunk) chunks.push(currentChunk);
+
+  return chunks;
 }

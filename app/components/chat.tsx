@@ -86,6 +86,7 @@ import { useAllModels } from "../utils/hooks";
 import { uploadFile } from "../utils/upload";
 import { useCurrentFile } from "../store/upload";
 import { useCogTTS } from "../utils/cogtts";
+import { useStreamCogTTS } from "../utils/streamCogTTS";
 
 const Markdown = dynamic(async () => (await import("./markdown")).Markdown, {
   loading: () => <LoadingIcon />,
@@ -390,7 +391,6 @@ export function ChatActions(props: {
   hitBottom: boolean;
   isTTSPlaying?: boolean;
   stopTTS?: () => void;
-  cogTTSMessageId?: string | null;
 }) {
   const config = useAppConfig();
   const navigate = useNavigate();
@@ -564,21 +564,12 @@ export function ChatActions(props: {
 
       <ChatAction
         onClick={() => {
-          const newState = !enableTTS;
           useChatSettings.setState({
-            enableTTS: newState,
+            enableTTS: !enableTTS,
           });
-          // If disabling TTS, stop auto-stream playback
-          if (
-            !newState &&
-            props.isTTSPlaying &&
-            props.cogTTSMessageId === "auto-stream"
-          ) {
-            props.stopTTS?.();
-          }
         }}
         selected={enableTTS}
-        text={"自动朗读"}
+        text={"TTS"}
         icon={<SpeakerIcon />}
       />
 
@@ -724,61 +715,21 @@ function _Chat() {
   const { useReasoner, enableTTS } = useChatSettings();
   const session = chatStore.currentSession();
 
-  // CogTTS Hook
-  const cogTTS = useCogTTS();
-
-  // Auto TTS for streaming messages
+  // Stream TTS Hook - uses CogTTS for streaming responses
   const lastMessage = session.messages.at(-1);
   const isStreaming = lastMessage?.streaming ?? false;
   const isAssistant = lastMessage?.role === "assistant";
-  const lastMessageId = lastMessage?.id || "";
-  const lastMessageContent = isAssistant ? lastMessage.content : "";
+  const ttsText = isAssistant ? lastMessage.content : "";
+  const lastMessageId = lastMessage?.id;
+  useStreamCogTTS(ttsText, isStreaming, enableTTS, lastMessageId);
 
-  // Ref to track the last auto-played content to avoid re-triggering
-  const lastAutoPlayedRef = useRef<{ messageId: string; content: string }>({
-    messageId: "",
-    content: "",
-  });
+  // CogTTS Hook for manual playback
+  const cogTTS = useCogTTS();
 
+  // Listen to streaming state changes to stop manual TTS
   useEffect(() => {
-    if (!enableTTS) {
-      // If TTS is disabled, stop any ongoing playback
-      if (cogTTS.isPlaying && cogTTS.playingMessageId === "auto-stream") {
-        cogTTS.stop();
-      }
-      return;
-    }
-
-    // Auto-play when streaming finishes
-    if (!isStreaming && isAssistant && lastMessageContent) {
-      const isNewMessage =
-        lastAutoPlayedRef.current.messageId !== lastMessageId;
-
-      // Only play if it's a new message we haven't played yet
-      if (isNewMessage) {
-        lastAutoPlayedRef.current = {
-          messageId: lastMessageId,
-          content: lastMessageContent,
-        };
-        cogTTS.play(lastMessageContent, "auto-stream");
-      }
-    }
-  }, [
-    enableTTS,
-    isStreaming,
-    isAssistant,
-    lastMessageContent,
-    lastMessageId,
-    cogTTS,
-  ]);
-
-  // When streaming starts with auto TTS enabled, ensure manual playback is stopped
-  useEffect(() => {
-    if (isStreaming && enableTTS) {
-      // If user is manually playing a message, stop it when new stream starts
-      if (cogTTS.isPlaying && cogTTS.playingMessageId !== "auto-stream") {
-        cogTTS.stop();
-      }
+    if (isStreaming && enableTTS && cogTTS.isPlaying) {
+      cogTTS.stop();
     }
   }, [isStreaming, enableTTS, cogTTS]);
 
@@ -1485,7 +1436,6 @@ function _Chat() {
           hitBottom={hitBottom}
           isTTSPlaying={cogTTS.isPlaying}
           stopTTS={cogTTS.stop}
-          cogTTSMessageId={cogTTS.playingMessageId}
           showPromptHints={() => {
             // Click again to close
             if (promptHints.length > 0) {
